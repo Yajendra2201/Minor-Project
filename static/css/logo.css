@@ -1,0 +1,16 @@
+.lo {
+    height: 40px;
+  width: 40px;
+    background-color: lightgrey;
+    color: black;
+    text-shadow:2px -2px 1px grey;
+    font-size:30px;
+    text-align: center;
+    border-radius: 50%;
+   margin: 1% 0% 0% -3%;
+}
+.lo:hover{
+  background-color: lightblue;
+  color: darkblue;
+  text-shadow:2px -2px 1px blue;
+}
