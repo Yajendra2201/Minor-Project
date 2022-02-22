@@ -110,12 +110,9 @@ def checker():
         if request.method=='POST':
             c=request.form['city']
             url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
-            print()
-            print(url)
-            print()
+            
             d=requests.get(url).json()
             l=dict(d)
-            print(type(d))
             # print(d)
             # d=request.get_data(url)
             # # dj=d.decode('utf-8')
