@@ -38,31 +38,30 @@
             <thead> 
               <tr>
                 <th scope="col"  style="width:10%">S No</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Gender</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Email</th>
-                <th scope="col">Feedbacks</th>
-                <th scope="col" colspan="2">Status</th>
+                <th scope="col">City</th>
+                <th scope="col">Longitude</th>
+                <th scope="col">Latitude</th>
+                <th scope="col">Weather</th>
+                <th scope="col">Temperature</th>
+                <th scope="col">Feels Like</th>
+                <th scope="col">Pressure</th>
+                <th scope="col">Humidity</th>
+                <th scope="col">Time</th>
               </tr>
             </thead>
             <tbody>
     {% for rows in allfeed %}
       <tr>
         <th scope="row">{{loop.index}}</th>
-        <td>{{rows.fname}}</td>
-        <td>{{rows.lname}}</td>
-        <td>{{rows.gender}}</td>
-        <td>{{rows.phone}}</td>
-        <td>{{rows.email}}</td>
-        <td>{{rows.feedb}}</td>
-        <td>
-          <a href="/delete/{{rows.sno}}" type="button" class="btn btn-outline-dark btn-sm">Delete</a>
-      </td>
-      <td>
-        <a href="/update/{{rows.sno}}" type="button" class="btn btn-outline-dark btn-sm">Update</a>
-    </td>
+        <td>{{rows.City}}</td>
+        <td>{{rows.Longitude}}</td>
+        <td>{{rows.Latitude}}</td>
+        <td>{{rows.Weather}}</td>
+        <td>{{rows.Temperature}}</td>
+        <td>{{rows.Feels_Like}}</td>
+        <td>{{rows.Pressure}}</td>
+        <td>{{rows.Humidity}}</td>
+        <td>{{rows.Time}}</td>
     </tr>
     {% endfor %}
     {% endif %}

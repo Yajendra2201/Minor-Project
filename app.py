@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 import requests
 import time
 
+from datetime import datetime
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///feedback.db'
@@ -31,6 +33,20 @@ class registration(db.Model):
     email=db.Column(db.String(50), nullable=False)
     password=db.Column(db.String(20), nullable=False)
     
+class weather(db.Model):
+    sno=db.Column(db.Integer, primary_key=True) 
+    Email=db.Column(db.String(50), nullable=False)
+    City=db.Column(db.String(20), nullable=False)
+    Longitude=db.Column(db.String(20), nullable=False)
+    Latitude=db.Column(db.String(20), nullable=False)
+    Weather=db.Column(db.String(20), nullable=False)
+    Temperature=db.Column(db.String(20), nullable=False)
+    Feels_Like=db.Column(db.String(20), nullable=False)
+    Pressure=db.Column(db.String(20), nullable=False)
+    Humidity=db.Column(db.String(20), nullable=False)
+    Time=db.Column(db.String(20), nullable=False)
+
+
 @app.route("/",methods=["GET","POST"])
 def login():
     # global em,pa
@@ -119,14 +135,15 @@ def currentwea():
                l=dict(d)
                print(l)
                if l['cod']!='404':
-                 t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
-                 l['dth']=t
+                    t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
+                    l['dth']=t
+
+                    we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+                    db.session.add(we)
+                    db.session.commit()
+
                return render_template("currentwea.html",l=l,se=session['logo'])
 
-            # print(d)
-            # d=request.get_data(url)
-            # # dj=d.decode('utf-8')
-            # print(json.JSONEncoder().encode(d))
         return render_template("currentwea.html",l={'0':0},se=session['logo'])
     else:
         return redirect("/")
@@ -167,12 +184,12 @@ def contact():
         return redirect("/")
     
     
-@app.route("/feedbacks")
-def feedb():
+@app.route("/history")
+def history():
     # if em !="" and pa !="":
     if 'email' in session:
-        allfeed=feedback.query.all()
-        return render_template("feedbacks.html",allfeed=allfeed,se=session['logo'])
+        allfeed=weather.query.filter_by(Email=session['email']).all()
+        return render_template("history.html",allfeed=allfeed,se=session['logo'])
     else:
         return redirect("/")
 
@@ -185,7 +202,7 @@ def delete(sno):
         db.session.delete(feed)
         db.session.commit()
         flash("Your feedback is successfully deleted","success")
-        return redirect('/feedbacks')
+        return redirect('/history')
     else:
         return redirect("/")
     
@@ -216,7 +233,7 @@ def update(sno):
                 db.session.commit()
                 flash("Your feedback is successfully updated","success")
 
-                return redirect('/feedbacks')
+                return redirect('/history')
 
         feed=feedback.query.filter_by(sno=sno).first()
         return render_template('update.html',feed=feed,se=session['logo'])
