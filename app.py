@@ -198,7 +198,7 @@ def history():
 def deletehistory(sno):
     # if em !="" and pa !="":   
     if 'email' in session:
-        feed=weather.query.filter_by(sno=sno).first()
+        feed=weather.query.filter_by(Email=session['email'],sno=sno).first()
         db.session.delete(feed)
         db.session.commit()
         flash("History is successfully deleted","success")
