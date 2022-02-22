@@ -3,7 +3,7 @@
 {% block title %}Checker title{% endblock title %}
 
 {% block body %}  
-<h1 class="text-center">Get Current Weather Details</h1>
+<h1 class="text-center my-3">Get Current Weather Details</h1>
 <div class="justify-content-center">
 <form action="/currentwea" method='POST'>
     <div class="input-group" style="padding: 2% 26% 2% 26%;">
@@ -14,11 +14,6 @@
       </div>
       <button type="submit" style="padding: 0% 1% 0% 1%; margin: 2% 47%;">Submit</button>
 </form>
-<!-- </div>
-{% for ls in l.keys()%}
-<div> {{ls}}<span class="mx-2">:-</span>{{l[ls]}}</div>
-<br>
-{% endfor %} -->
 
 {% if l['0'] == 0 %}
 
