@@ -2,6 +2,7 @@ import re
 from flask import Flask, render_template, request, redirect,flash,session
 from flask_sqlalchemy import SQLAlchemy
 import requests
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -113,9 +114,13 @@ def currentwea():
                 return render_template("currentwea.html",l={'0':0},se=session['logo'])
             else:
                url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
-            
+               
                d=requests.get(url).json()
                l=dict(d)
+               print(l)
+               if l['cod']!='404':
+                 t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
+                 l['dth']=t
                return render_template("currentwea.html",l=l,se=session['logo'])
 
             # print(d)
