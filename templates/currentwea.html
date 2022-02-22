@@ -22,9 +22,16 @@
 
 {% if l['0'] == 0 %}
 
-    <h1>
-        No Data
+    <h1 class="blockquote text-center">
+        Please enter city name
     </h1>
+
+{% elif l['cod']=='404'%}
+
+<h1 class="blockquote text-center">
+    {{l['message']}}
+</h1>
+
 {% else %}
 
     <div class="blockquote text-center">

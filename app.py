@@ -109,20 +109,20 @@ def currentwea():
     if 'email' in session:
         if request.method=='POST':
             c=request.form['city']
-            if c==" ":
+            if c=="":
+                return render_template("currentwea.html",l={'0':0},se=session['logo'])
+            else:
                url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
             
                d=requests.get(url).json()
                l=dict(d)
                return render_template("currentwea.html",l=l,se=session['logo'])
-            else:
-                l={'0':0}
-                return render_template("currentwea.html",l=l,se=session['logo'])
+
             # print(d)
             # d=request.get_data(url)
             # # dj=d.decode('utf-8')
             # print(json.JSONEncoder().encode(d))
-        return render_template("currentwea.html",l=dict(),se=session['logo'])
+        return render_template("currentwea.html",l={'0':0},se=session['logo'])
     else:
         return redirect("/")
 
