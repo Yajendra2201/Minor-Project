@@ -1,3 +1,4 @@
+import re
 from flask import Flask, render_template, request, redirect,flash,session
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -106,15 +107,21 @@ def hello_world():
 def checker():
     # if em !="" and pa !="":
     if 'email' in session:
-        url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q=assam"
-        d=requests.get(url).json()
-        l=dict(d)
-        print(type(d))
-        # print(d)
-        # d=request.get_data(url)
-        # # dj=d.decode('utf-8')
-        # print(json.JSONEncoder().encode(d))
-        return render_template("checker.html",l=l,se=session['logo'])
+        if request.method=='POST':
+            c=request.form['city']
+            url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
+            print()
+            print(url)
+            print()
+            d=requests.get(url).json()
+            l=dict(d)
+            print(type(d))
+            # print(d)
+            # d=request.get_data(url)
+            # # dj=d.decode('utf-8')
+            # print(json.JSONEncoder().encode(d))
+            return render_template("checker.html",l=l,se=session['logo'])
+        return render_template("checker.html",l=dict(),se=session['logo'])
     else:
         return redirect("/")
 

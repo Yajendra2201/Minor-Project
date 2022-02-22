@@ -4,10 +4,54 @@
 
 {% block body %}  
 <h1 class="text-center">It's a Checker Page</h1>
+<div class="justify-content-center">
+<form action="/Checker" method='POST'>
+    <div class="input-group" style="padding: 2% 26% 2% 26%;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="">City Name</span>
+        </div>
+        <input type="text" class="form-control" name="city">
+      </div>
+      <button type="submit" style="padding: 0% 1% 0% 1%; margin: 2% 50%;">Submit</button>
+</form>
+<!-- </div>
 {% for ls in l.keys()%}
 <div> {{ls}}<span class="mx-2">:-</span>{{l[ls]}}</div>
 <br>
-{% endfor %}
-<span></span>
-<img src="https://openweathermap.org/img/wn/{{l.weather[0].icon}}@2x.png" width="800px" height="800px">
+{% endfor %} -->
+
+{% if l|length ==0 %}
+
+    <h1>
+        No Data
+    </h1>
+{% else %}
+
+    <div class="blockquote text-center">
+        City: - {{l['name']}}
+        <hr>
+        Coordinates: -<br>
+        longitude: - {{l['coord']['lon']}}<br>
+        latitude: - {{l['coord']['lat']}}<br>
+        <hr>
+        Weather: - {{l['weather'][0]['main']}}
+        <hr>
+        Temperature details: -<br>
+        Temperature: - {{l['main']['temp']-273.15}} C<br>
+        Min Temperature: - {{l['main']['temp_min']-273.15}} C<br>
+        MAx Temperature: - {{l['main']['temp_max']-273.15}} C
+        <hr>
+        Pressure: - {{l['main']['pressure']}}
+        <hr>
+        Humidity: - {{l['main']['humidity']}}
+        <hr>
+        Wind details: -<br>
+        Speed: - {{l['wind']['speed']}}<br>
+        Gust: - {{l['wind']['gust']}}
+        <hr>
+
+
+    </div>
+
+{% endif %}
 {% endblock body %}
