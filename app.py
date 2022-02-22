@@ -103,22 +103,26 @@ def hello_world():
     else:
         return redirect("/")
 
-@app.route("/Checker",methods=['GET','POST'])
-def checker():
+@app.route("/currentwea",methods=['GET','POST'])
+def currentwea():
     # if em !="" and pa !="":
     if 'email' in session:
         if request.method=='POST':
             c=request.form['city']
-            url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
+            if c==" ":
+               url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
             
-            d=requests.get(url).json()
-            l=dict(d)
+               d=requests.get(url).json()
+               l=dict(d)
+               return render_template("currentwea.html",l=l,se=session['logo'])
+            else:
+                l={'0':0}
+                return render_template("currentwea.html",l=l,se=session['logo'])
             # print(d)
             # d=request.get_data(url)
             # # dj=d.decode('utf-8')
             # print(json.JSONEncoder().encode(d))
-            return render_template("checker.html",l=l,se=session['logo'])
-        return render_template("checker.html",l=dict(),se=session['logo'])
+        return render_template("currentwea.html",l=dict(),se=session['logo'])
     else:
         return redirect("/")
 
