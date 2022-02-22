@@ -44,6 +44,7 @@ class weather(db.Model):
     Feels_Like=db.Column(db.String(20), nullable=False)
     Pressure=db.Column(db.String(20), nullable=False)
     Humidity=db.Column(db.String(20), nullable=False)
+    Wind=db.Column(db.String(20), nullable=False)
     Time=db.Column(db.String(20), nullable=False)
 
 
@@ -138,7 +139,7 @@ def currentwea():
                     t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
                     l['dth']=t
 
-                    we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+                    we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Wind=l['wind']['speed'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
                     db.session.add(we)
                     db.session.commit()
 
