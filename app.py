@@ -194,6 +194,18 @@ def history():
     else:
         return redirect("/")
 
+@app.route("/deletehistory/<int:sno>")
+def deletehistory(sno):
+    # if em !="" and pa !="":   
+    if 'email' in session:
+        feed=weather.query.filter_by(sno=sno).first()
+        db.session.delete(feed)
+        db.session.commit()
+        flash("History is successfully deleted","success")
+        return redirect('/history')
+    else:
+        return redirect("/")
+
 
 @app.route("/delete/<int:sno>")
 def delete(sno):
