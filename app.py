@@ -15,7 +15,7 @@ db=SQLAlchemy(app)
 # em=""
 # pa=""
 
-class feedback(db.Model):
+class ContactUs(db.Model):
     sno=db.Column(db.Integer, primary_key=True)
     fname=db.Column(db.String(20), nullable=False)
     lname=db.Column(db.String(20), nullable=False)
@@ -172,8 +172,8 @@ def contact():
                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
                 redirect("/ContactUs")
             else:
-                feed=feedback(fname=fname,lname=lname,gender=gender,phone=phone,email=email,feedb=feedb)
-                db.session.add(feed)
+                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,feedb=feedb)
+                db.session.add(con)
                 db.session.commit()
                 flash("Your feedback is successfully ","success")
                 return redirect("/ContactUs")
@@ -211,8 +211,8 @@ def deletehistory(sno):
 def delete(sno):
     # if em !="" and pa !="":   
     if 'email' in session:
-        feed=feedback.query.filter_by(sno=sno).first()
-        db.session.delete(feed)
+        con=ContactUs.query.filter_by(sno=sno).first()
+        db.session.delete(con)
         db.session.commit()
         flash("Your feedback is successfully deleted","success")
         return redirect('/history')
@@ -234,22 +234,22 @@ def update(sno):
                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
                 redirect("/update/sno")
             else:
-                feed=feedback.query.filter_by(sno=sno).first()
-                feed.fname=fname
-                feed.lname=lname
-                feed.gender=gender
-                feed.phone=phone
-                feed.email=email
-                feed.feedb=feedb
+                con=ContactUs.query.filter_by(sno=sno).first()
+                con.fname=fname
+                con.lname=lname
+                con.gender=gender
+                con.phone=phone
+                con.email=email
+                con.feedb=feedb
 
-                db.session.add(feed)
+                db.session.add(con)
                 db.session.commit()
                 flash("Your feedback is successfully updated","success")
 
                 return redirect('/history')
 
-        feed=feedback.query.filter_by(sno=sno).first()
-        return render_template('update.html',feed=feed,se=session['logo'])
+        con=ContactUs.query.filter_by(sno=sno).first()
+        return render_template('update.html',feed=con,se=session['logo'])
     else:
         return redirect("/")
 
