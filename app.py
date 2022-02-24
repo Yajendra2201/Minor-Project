@@ -22,7 +22,7 @@ class ContactUs(db.Model):
     gender=db.Column(db.String(7), nullable=False)
     phone=db.Column(db.Integer, nullable=False)
     email=db.Column(db.String(20), nullable=False)
-    feedb=db.Column(db.String(500), nullable=False)
+    msg=db.Column(db.String(500), nullable=False)
 
 class registration(db.Model):
     sno=db.Column(db.Integer, primary_key=True)
@@ -167,12 +167,12 @@ def contact():
             gender=request.form['gender']
             phone=request.form['phone']
             email=request.form['email']
-            feedb=request.form['feedb']
-            if fname=="" or lname=="" or len(phone)!=10 or email=="" or feedb=="":
+            msg=request.form['feedb']
+            if fname=="" or lname=="" or len(phone)!=10 or email=="" or msg=="":
                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
                 redirect("/ContactUs")
             else:
-                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,feedb=feedb)
+                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg)
                 db.session.add(con)
                 db.session.commit()
                 flash("Your feedback is successfully ","success")
