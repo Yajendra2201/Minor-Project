@@ -150,29 +150,102 @@ def currentwea():
     else:
         return redirect("/")
 
+
+@app.route("/forecast")
+def forecast():
+    # if em !="" and pa !="":
+    if 'email' in session:
+        # d=[
+        #     ('01-01-2020',7),
+        #     ('02-01-2020',6),
+        #     ('03-01-2020',11),            
+        #     ('04-01-2020',3),            
+        #     ('05-01-2020',25),            
+        #     ('06-01-2020',40),            
+        #     ('07-01-2020',33),            
+        #     ('08-01-2020',29),            
+        #     ('09-01-2020',7),
+        #     ('10-01-2020',10),
+        # ]
+
+        # l=list()
+        # x=list()
+        # for i in d:
+        #     l.append(i[0])
+        #     x.append(i[1])
+
+        url="https://api.openweathermap.org/data/2.5/forecast?q=mumbai&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+        da=requests.get(url).json()
+
+        d=list()
+        t=list()
+        h=list()
+        w=list()
+        p=list()
+
+        for i in range(0,len(da['list'])):
+                d.append(da['list'][i]['dt_txt'])
+                t.append(da['list'][i]['main']['temp']-273.15)
+                h.append(da['list'][i]['main']['humidity'])
+                p.append(da['list'][i]['main']['pressure'])
+                w.append(da['list'][i]['wind']['speed'])
+
+        d=json.dumps(d)
+        t=json.dumps(t)
+        h=json.dumps(h)        
+        w=json.dumps(w)        
+        p=json.dumps(p)
+
+        return render_template("forecast.html",se=session['logo'],d=d,t=t,h=h,w=w,p=p)#,labels=json.dumps(l),values=json.dumps(x))
+    else:
+        return redirect("/")
+
 @app.route("/AboutUs")
 def about():
     # if em !="" and pa !="":
     if 'email' in session:
-        d=[
-            ('01-01-2020',7),
-            ('02-01-2020',6),
-            ('03-01-2020',11),            
-            ('04-01-2020',3),            
-            ('05-01-2020',25),            
-            ('06-01-2020',40),            
-            ('07-01-2020',33),            
-            ('08-01-2020',29),            
-            ('09-01-2020',7),
-            ('10-01-2020',10),
-        ]
+        # d=[
+        #     ('01-01-2020',7),
+        #     ('02-01-2020',6),
+        #     ('03-01-2020',11),            
+        #     ('04-01-2020',3),            
+        #     ('05-01-2020',25),            
+        #     ('06-01-2020',40),            
+        #     ('07-01-2020',33),            
+        #     ('08-01-2020',29),            
+        #     ('09-01-2020',7),
+        #     ('10-01-2020',10),
+        # ]
 
-        l=list()
-        x=list()
-        for i in d:
-            l.append(i[0])
-            x.append(i[1])
-        return render_template("about.html",se=session['logo'],labels=json.dumps(l),values=json.dumps(x))
+        # l=list()
+        # x=list()
+        # for i in d:
+        #     l.append(i[0])
+        #     x.append(i[1])
+
+        url="https://api.openweathermap.org/data/2.5/forecast?q=mumbai&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+        da=requests.get(url).json()
+
+        d=list()
+        t=list()
+        h=list()
+        w=list()
+        p=list()
+
+        for i in range(0,len(da['list'])):
+                d.append(da['list'][i]['dt_txt'])
+                t.append(da['list'][i]['main']['temp']-273.15)
+                h.append(da['list'][i]['main']['humidity'])
+                p.append(da['list'][i]['main']['pressure'])
+                w.append(da['list'][i]['wind']['speed'])
+
+        d=json.dumps(d)
+        t=json.dumps(t)
+        h=json.dumps(h)        
+        w=json.dumps(w)        
+        p=json.dumps(p)
+
+        return render_template("about.html",se=session['logo'],d=d,t=t,h=h,w=w,p=p)#,labels=json.dumps(l),values=json.dumps(x))
     else:
         return redirect("/")
 

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Forecast{% endblock title %}
+
+{% block body %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<h1 class="text-center">Weather Forcest of next 5 days</h1>
+
+<canvas id="temperature" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+<canvas id="wind" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+<canvas id="pressure" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+<canvas id="hummidity" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+<script>
+  let d=JSON.parse({{ d | tojson}})
+  let t=JSON.parse({{ t | tojson}})
+  let h=JSON.parse({{ h | tojson}})
+  let w=JSON.parse({{ w | tojson}})
+  let p=JSON.parse({{ p | tojson}})
+  
+  var tem=document.getElementById("temperature").getContext("2d");
+  var temperature= new Chart(tem,{
+    type: "line",
+    data: {
+      labels: d,
+      datasets: [
+        {
+          label: "Changing temperature",
+          data: t,
+          fill: true,
+          borderColor: "rgb(204, 0, 0)",
+          lineTension: 0.5
+        
+      }
+      ]
+    },
+    options:{
+      responsive: false
+    }
+  });
+
+  var win=document.getElementById("wind").getContext("2d");
+  var wind= new Chart(win,{
+    type: "line",
+    data: {
+      labels: d,
+      datasets: [
+        {
+          label: "Changing Wind Speed",
+          data: w,
+          fill: true,
+          borderColor: "rgb(75,192,192)",
+          lineTension: 0.5
+        
+      }
+      ]
+    },
+    options:{
+      responsive: false
+    }
+  });
+
+  var per=document.getElementById("pressure").getContext("2d");
+  var pressure= new Chart(per,{
+    type: "line",
+    data: {
+      labels: d,
+      datasets: [
+        {
+          label: "Changing Pressure",
+          data: p,
+          fill: true,
+          borderColor: "rgb(0,102,51)",
+          lineTension: 0.5
+        
+      }
+      ]
+    },
+    options:{
+      responsive: false
+    }
+  });
+
+  var hum=document.getElementById("hummidity").getContext("2d");
+  var hummidity= new Chart(hum,{
+    type: "line",
+    data: {
+      labels: d,
+      datasets: [
+        {
+          label: "Changing humidity",
+          data: h,
+          fill: true,
+          borderColor: "rgb(96,96,96)",
+          lineTension: 0.5
+        
+      }
+      ]
+    },
+    options:{
+      responsive: false
+    }
+  });
+
+</script> 
+
+
+{% endblock body %}
