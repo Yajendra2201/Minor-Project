@@ -5,13 +5,41 @@
 {% block body %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+
 <h1 class="text-center">Weather Forcest of next 5 days</h1>
+
+<div class="justify-content-center">
+  <form action="/forecast" method='POST'>
+      <div class="input-group" style="padding: 2% 26% 2% 26%;">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="">City Name</span>
+          </div>
+          <input type="text" class="form-control" name="city">
+        </div>
+        <button type="submit" style="padding: 0% 1% 0% 1%; margin: 2% 47%;">Submit</button>
+  </form>
+  
+  {% if l['0'] == 0 %}
+  
+      <h1 class="blockquote text-center">
+          Please enter city name
+      </h1>
+  
+  {% elif l['cod']=='404'%}
+  
+  <h1 class="blockquote text-center">
+      {{l['message']}}
+  </h1>
+  
+  {% else %}
+
+  <!-- TODO main, description -->
 
 <canvas id="temperature" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
 
 <canvas id="wind" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
 
-<canvas id="pressure" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+<canvas id="pressure" width="1200" height="1000" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
 
 <canvas id="hummidity" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
 
@@ -108,5 +136,6 @@
 
 </script> 
 
+{% endif %}
 
 {% endblock body %}

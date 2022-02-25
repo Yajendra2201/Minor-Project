@@ -135,7 +135,6 @@ def currentwea():
                
                d=requests.get(url).json()
                l=dict(d)
-               print(l)
                if l['cod']!='404':
                     t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
                     l['dth']=t
@@ -151,52 +150,47 @@ def currentwea():
         return redirect("/")
 
 
-@app.route("/forecast")
+@app.route("/forecast",methods=['GET','POST'])
 def forecast():
     # if em !="" and pa !="":
     if 'email' in session:
-        # d=[
-        #     ('01-01-2020',7),
-        #     ('02-01-2020',6),
-        #     ('03-01-2020',11),            
-        #     ('04-01-2020',3),            
-        #     ('05-01-2020',25),            
-        #     ('06-01-2020',40),            
-        #     ('07-01-2020',33),            
-        #     ('08-01-2020',29),            
-        #     ('09-01-2020',7),
-        #     ('10-01-2020',10),
-        # ]
+        if request.method=='POST':
+            c=request.form['city']
+            if c=="":
+                return render_template("forecast.html",l={'0':0},se=session['logo'])
+            else:
+                url="https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+                da=requests.get(url).json()
 
-        # l=list()
-        # x=list()
-        # for i in d:
-        #     l.append(i[0])
-        #     x.append(i[1])
+                if da['cod']=='404':
+                  return render_template("forecast.html",se=session['logo'],l=da)
+                  
+                d=list()
+                t=list()
+                h=list()
+                w=list()
+                p=list()
+                we=list()
 
-        url="https://api.openweathermap.org/data/2.5/forecast?q=mumbai&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
-        da=requests.get(url).json()
+                for i in range(0,len(da['list'])):
+                        d.append(da['list'][i]['dt_txt'])
+                        t.append(da['list'][i]['main']['temp']-273.15)
+                        h.append(da['list'][i]['main']['humidity'])
+                        p.append(da['list'][i]['main']['pressure'])
+                        w.append(da['list'][i]['wind']['speed'])
+                        we.append(da['list'][i]['weather'])
 
-        d=list()
-        t=list()
-        h=list()
-        w=list()
-        p=list()
+                d=json.dumps(d)
+                t=json.dumps(t)
+                h=json.dumps(h)        
+                w=json.dumps(w)        
+                p=json.dumps(p)
+                we=json.dumps(we)
+                
+                print(we)
 
-        for i in range(0,len(da['list'])):
-                d.append(da['list'][i]['dt_txt'])
-                t.append(da['list'][i]['main']['temp']-273.15)
-                h.append(da['list'][i]['main']['humidity'])
-                p.append(da['list'][i]['main']['pressure'])
-                w.append(da['list'][i]['wind']['speed'])
-
-        d=json.dumps(d)
-        t=json.dumps(t)
-        h=json.dumps(h)        
-        w=json.dumps(w)        
-        p=json.dumps(p)
-
-        return render_template("forecast.html",se=session['logo'],d=d,t=t,h=h,w=w,p=p)#,labels=json.dumps(l),values=json.dumps(x))
+                return render_template("forecast.html",se=session['logo'],l=da,d=d,t=t,h=h,w=w,p=p,we=we)
+        return render_template("forecast.html",l={'0':0},se=session['logo'])
     else:
         return redirect("/")
 
