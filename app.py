@@ -1,6 +1,7 @@
 import re
 from flask import Flask, render_template, request, redirect,flash,session
 from flask_sqlalchemy import SQLAlchemy
+from itsdangerous import json
 import requests
 import time
 
@@ -153,7 +154,25 @@ def currentwea():
 def about():
     # if em !="" and pa !="":
     if 'email' in session:
-        return render_template("about.html",se=session['logo'])
+        d=[
+            ('01-01-2020',7),
+            ('02-01-2020',6),
+            ('03-01-2020',11),            
+            ('04-01-2020',3),            
+            ('05-01-2020',25),            
+            ('06-01-2020',40),            
+            ('07-01-2020',33),            
+            ('08-01-2020',29),            
+            ('09-01-2020',7),
+            ('10-01-2020',10),
+        ]
+
+        l=list()
+        x=list()
+        for i in d:
+            l.append(i[0])
+            x.append(i[1])
+        return render_template("about.html",se=session['logo'],labels=json.dumps(l),values=json.dumps(x))
     else:
         return redirect("/")
 
