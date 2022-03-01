@@ -187,8 +187,6 @@ def forecast():
                 p=json.dumps(p)
                 we=json.dumps(we)
                 
-                print(we)
-
                 return render_template("forecast.html",se=session['logo'],l=da,d=d,t=t,h=h,w=w,p=p,we=we)
         return render_template("forecast.html",l={'0':0},se=session['logo'])
     else:
