@@ -34,6 +34,24 @@
   {% else %}
 
   <!-- TODO main, description -->
+  <div class="container text-center">
+
+    <h1>Weather Details: - </h1>
+    <select class="mdb-select md-form" style="margin: 2% 0%; padding: 1% 2% 1% 2%; border-radius: 25%">
+      <option selected="">None</option>
+    
+    {% for i in we%}
+    <option>
+      Date: - {{i}}
+      Main: - {{we[i]['main']}}
+      Description: - {{we[i]['description']}}
+     </option>
+    {% endfor %}
+  
+  </select>
+   
+
+  </div>
 
 <canvas id="temperature" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
 

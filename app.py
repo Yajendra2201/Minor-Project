@@ -160,34 +160,35 @@ def forecast():
                 return render_template("forecast.html",l={'0':0},se=session['logo'])
             else:
                 url="https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
-                da=requests.get(url).json()
+                data=requests.get(url).json()
 
-                if da['cod']=='404':
-                  return render_template("forecast.html",se=session['logo'],l=da)
+                if data['cod']=='404':
+                  return render_template("forecast.html",se=session['logo'],l=data)
                   
-                d=list()
+                da=list()
                 t=list()
                 h=list()
                 w=list()
                 p=list()
-                we=list()
+                we=dict()
 
-                for i in range(0,len(da['list'])):
-                        d.append(da['list'][i]['dt_txt'])
-                        t.append(da['list'][i]['main']['temp']-273.15)
-                        h.append(da['list'][i]['main']['humidity'])
-                        p.append(da['list'][i]['main']['pressure'])
-                        w.append(da['list'][i]['wind']['speed'])
-                        we.append(da['list'][i]['weather'])
+                for i in range(0,len(data['list'])):
+                        da.append(data['list'][i]['dt_txt'])
+                        t.append(data['list'][i]['main']['temp']-273.15)
+                        h.append(data['list'][i]['main']['humidity'])
+                        p.append(data['list'][i]['main']['pressure'])
+                        w.append(data['list'][i]['wind']['speed'])
+                        we[da[i]]=data['list'][i]['weather'][0]
 
-                d=json.dumps(d)
+                d=json.dumps(da)
                 t=json.dumps(t)
                 h=json.dumps(h)        
                 w=json.dumps(w)        
                 p=json.dumps(p)
-                we=json.dumps(we)
+
                 
-                return render_template("forecast.html",se=session['logo'],l=da,d=d,t=t,h=h,w=w,p=p,we=we)
+                
+                return render_template("forecast.html",se=session['logo'],l=data,d=d,t=t,h=h,w=w,p=p,we=we)
         return render_template("forecast.html",l={'0':0},se=session['logo'])
     else:
         return redirect("/")
