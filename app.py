@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import json
 import requests
 import time
-
+import math
 from datetime import datetime
 
 app = Flask(__name__)
@@ -48,6 +48,12 @@ class weather(db.Model):
     Wind=db.Column(db.String(20), nullable=False)
     Time=db.Column(db.String(20), nullable=False)
 
+class feedback(db.Model):
+    sno=db.Column(db.Integer, primary_key=True) 
+    Email=db.Column(db.String(20), nullable=False)
+    Feedb=db.Column(db.String(50), nullable=False)
+    Time=db.Column(db.String(20), nullable=False)
+    
 
 @app.route("/",methods=["GET","POST"])
 def login():
@@ -95,7 +101,7 @@ def signup():
         
         if fname=="" or lname=="" or len(phone)!=10 or email=="" or password=="":
             flash("Please fill all the feilds and phone number should be of 10 digits","warning")
-            redirect("/signup")
+            return redirect("/signup")
         else:
             log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=password)
             db.session.add(log)
@@ -149,6 +155,26 @@ def currentwea():
     else:
         return redirect("/")
 
+@app.route("/history")
+def history():
+    # if em !="" and pa !="":
+    if 'email' in session:
+        allfeed=weather.query.filter_by(Email=session['email']).all()
+        return render_template("history.html",allfeed=allfeed,se=session['logo'])
+    else:
+        return redirect("/")
+
+@app.route("/deletehistory/<int:sno>")
+def deletehistory(sno):
+    # if em !="" and pa !="":   
+    if 'email' in session:
+        feed=weather.query.filter_by(Email=session['email'],sno=sno).first()
+        db.session.delete(feed)
+        db.session.commit()
+        flash("History is successfully deleted","success")
+        return redirect('/history')
+    else:
+        return redirect("/")
 
 @app.route("/forecast",methods=['GET','POST'])
 def forecast():
@@ -193,54 +219,50 @@ def forecast():
     else:
         return redirect("/")
 
-@app.route("/AboutUs")
+@app.route("/AboutUs",methods=['GET','POST'])
 def about():
     # if em !="" and pa !="":
     if 'email' in session:
-        # d=[
-        #     ('01-01-2020',7),
-        #     ('02-01-2020',6),
-        #     ('03-01-2020',11),            
-        #     ('04-01-2020',3),            
-        #     ('05-01-2020',25),            
-        #     ('06-01-2020',40),            
-        #     ('07-01-2020',33),            
-        #     ('08-01-2020',29),            
-        #     ('09-01-2020',7),
-        #     ('10-01-2020',10),
-        # ]
+        if request.method=='POST':
+            f=request.form['feedback']
+            if f=="":
+                return redirect("/AboutUs")
+            else:
+                feedb=feedback(Email=session['email'],Feedb=f,Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+                db.session.add(feedb)
+                db.session.commit()
+                flash("Your feedback is successfully send ","success")
+                return redirect("/AboutUs")
 
-        # l=list()
-        # x=list()
-        # for i in d:
-        #     l.append(i[0])
-        #     x.append(i[1])
-
-        url="https://api.openweathermap.org/data/2.5/forecast?q=mumbai&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
-        da=requests.get(url).json()
-
-        d=list()
-        t=list()
-        h=list()
-        w=list()
-        p=list()
-
-        for i in range(0,len(da['list'])):
-                d.append(da['list'][i]['dt_txt'])
-                t.append(da['list'][i]['main']['temp']-273.15)
-                h.append(da['list'][i]['main']['humidity'])
-                p.append(da['list'][i]['main']['pressure'])
-                w.append(da['list'][i]['wind']['speed'])
-
-        d=json.dumps(d)
-        t=json.dumps(t)
-        h=json.dumps(h)        
-        w=json.dumps(w)        
-        p=json.dumps(p)
-
-        return render_template("about.html",se=session['logo'],d=d,t=t,h=h,w=w,p=p)#,labels=json.dumps(l),values=json.dumps(x))
+        return render_template("about.html",se=session['logo'])
     else:
         return redirect("/")
+
+@app.route("/feedback")
+def feedb():
+    feed = feedback.query.filter_by().all()
+    last = math.ceil(len(feed)/2)
+    print(last)
+    page = request.args.get('page')
+    if (not str(page).isnumeric()):
+        page = 1
+    page = int(page)
+    feed = feed[(page-1)*2:(page-1)*2+ 2]
+    
+    if last==1:
+        prev = "#"
+        next = "#"
+    elif page==1:
+        prev = "#"
+        next = "/feedback?page="+ str(page+1)
+    elif page==last:
+        prev = "/feedback?page="+ str(page-1)
+        next = "#"
+    else:
+        prev = "/feedback?page="+ str(page-1)
+        next = "/feedback?page="+ str(page+1)
+    
+    return render_template('feedback.html',se=session['logo'],feed=feed, prev=prev, next=next)
 
 @app.route("/ContactUs",methods=["GET","POST"])
 def contact():
@@ -260,7 +282,7 @@ def contact():
                 con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg)
                 db.session.add(con)
                 db.session.commit()
-                flash("Your feedback is successfully ","success")
+                flash("Your Message is send successfully","success")
                 return redirect("/ContactUs")
         
         lo=registration.query.filter_by(email=session['email']).first()
@@ -268,75 +290,54 @@ def contact():
  
     else:
         return redirect("/")
+
+# contactus curd operations
+
+# @app.route("/delete/<int:sno>")
+# def delete(sno):
+#     # if em !="" and pa !="":   
+#     if 'email' in session:
+#         con=ContactUs.query.filter_by(sno=sno).first()
+#         db.session.delete(con)
+#         db.session.commit()
+#         flash("Your feedback is successfully deleted","success")
+#         return redirect('/history')
+#     else:
+#         return redirect("/")
     
-    
-@app.route("/history")
-def history():
-    # if em !="" and pa !="":
-    if 'email' in session:
-        allfeed=weather.query.filter_by(Email=session['email']).all()
-        return render_template("history.html",allfeed=allfeed,se=session['logo'])
-    else:
-        return redirect("/")
+# @app.route("/update/<int:sno>",methods=['GET','POST'])
+# def update(sno):
+#     # if em !="" and pa !="":    
+#     if 'email' in session:
+#         if request.method=='POST':
+#             fname=request.form['fname']
+#             lname=request.form['lname']
+#             gender=request.form['gender']
+#             phone=request.form['phone']
+#             email=request.form['email']
+#             feedb=request.form['feedb']
+#             if fname=="" or lname=="" or len(phone)!=10 or email=="" or feedb=="":
+#                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
+#                 redirect("/update/sno")
+#             else:
+#                 con=ContactUs.query.filter_by(sno=sno).first()
+#                 con.fname=fname
+#                 con.lname=lname
+#                 con.gender=gender
+#                 con.phone=phone
+#                 con.email=email
+#                 con.feedb=feedb
 
-@app.route("/deletehistory/<int:sno>")
-def deletehistory(sno):
-    # if em !="" and pa !="":   
-    if 'email' in session:
-        feed=weather.query.filter_by(Email=session['email'],sno=sno).first()
-        db.session.delete(feed)
-        db.session.commit()
-        flash("History is successfully deleted","success")
-        return redirect('/history')
-    else:
-        return redirect("/")
+#                 db.session.add(con)
+#                 db.session.commit()
+#                 flash("Your feedback is successfully updated","success")
 
+#                 return redirect('/history')
 
-@app.route("/delete/<int:sno>")
-def delete(sno):
-    # if em !="" and pa !="":   
-    if 'email' in session:
-        con=ContactUs.query.filter_by(sno=sno).first()
-        db.session.delete(con)
-        db.session.commit()
-        flash("Your feedback is successfully deleted","success")
-        return redirect('/history')
-    else:
-        return redirect("/")
-    
-@app.route("/update/<int:sno>",methods=['GET','POST'])
-def update(sno):
-    # if em !="" and pa !="":    
-    if 'email' in session:
-        if request.method=='POST':
-            fname=request.form['fname']
-            lname=request.form['lname']
-            gender=request.form['gender']
-            phone=request.form['phone']
-            email=request.form['email']
-            feedb=request.form['feedb']
-            if fname=="" or lname=="" or len(phone)!=10 or email=="" or feedb=="":
-                flash("Please fill all the feilds and phone number should be of 10 digits","warning")
-                redirect("/update/sno")
-            else:
-                con=ContactUs.query.filter_by(sno=sno).first()
-                con.fname=fname
-                con.lname=lname
-                con.gender=gender
-                con.phone=phone
-                con.email=email
-                con.feedb=feedb
-
-                db.session.add(con)
-                db.session.commit()
-                flash("Your feedback is successfully updated","success")
-
-                return redirect('/history')
-
-        con=ContactUs.query.filter_by(sno=sno).first()
-        return render_template('update.html',feed=con,se=session['logo'])
-    else:
-        return redirect("/")
+#         con=ContactUs.query.filter_by(sno=sno).first()
+#         return render_template('update.html',feed=con,se=session['logo'])
+#     else:
+#         return redirect("/")
 
 if __name__=="__main__":
     app.run(debug=True,port=8000)
