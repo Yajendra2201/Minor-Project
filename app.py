@@ -1,4 +1,3 @@
-import re
 from flask import Flask, render_template, request, redirect,flash,session
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import json
@@ -6,6 +5,7 @@ import requests
 import time
 import math
 from datetime import datetime
+import hashlib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -65,9 +65,10 @@ def login():
     if request.method=="POST":
         email=request.form['email']
         password=request.form['password']
+        p = hashlib.md5(password.encode())
         lo=registration.query.all()
         for i in lo:
-            if email==i.email and password==i.password:
+            if email==i.email and p.hexdigest()==i.password:
                 # em=i.email
                 # pa=i.password
                 session['email']=email
@@ -103,7 +104,8 @@ def signup():
             flash("Please fill all the feilds and phone number should be of 10 digits","warning")
             return redirect("/signup")
         else:
-            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=password)
+            p = hashlib.md5(password.encode())
+            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=p.hexdigest())
             db.session.add(log)
             db.session.commit()
             flash("Successfully Sign Up","success")
@@ -119,6 +121,58 @@ def logout():
     session.pop('email')
     session.pop('logo')
     return redirect("/")
+
+@app.route("/profile")
+def profile():
+    if 'email' in session:
+        lo=registration.query.filter_by(email=session['email']).first()
+        return render_template("profile.html",lo=lo,se=session['logo'])
+    else:
+        return redirect("/")
+
+@app.route("/profileupdate",methods=["GET","POST"])
+def profileupdate():
+    if 'email' in session:
+        if request.method=='POST':
+            fname=request.form['fname']
+            lname=request.form['lname']
+            gender=request.form['gender']
+            phone=request.form['phone']
+            cpass=request.form['cpassword']
+            npass=request.form['npassword']
+            copass=request.form['copassword']
+
+            re=registration.query.filter_by(email=session['email']).first()
+            
+            if cpass!="":
+                c=hashlib.md5(cpass.encode())
+                if c.hexdigest()!=re.password:
+                    flash("Invalid Current Password","warning")
+                    return redirect("/profile")
+                else:
+                    if npass=="":
+                        flash("New password is empty string","warning")
+                        return redirect("/profile")
+                    
+                    elif npass!=copass:
+                        flash("New and Confirm password does not matched","warning")
+                        return redirect("/profile")
+                    n=hashlib.md5(npass.encode())
+                    re.password=n.hexdigest()            
+            re.fname=fname
+            re.lname=lname
+            re.gender=gender
+            re.phone=phone
+
+            db.session.add(re)
+            db.session.commit()
+            flash("Your profile is successfully updated","success")
+
+            return redirect('/profile')
+
+    else:
+        redirect("/")
+
 
 @app.route("/home")
 def hello_world():
