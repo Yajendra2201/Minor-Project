@@ -65,21 +65,32 @@ def login():
     if request.method=="POST":
         email=request.form['email']
         password=request.form['password']
+        
+        if email=="" or password=="":
+            flash("Please Enter Email or Password","warning")
+            return redirect("/")
+        
         p = hashlib.md5(password.encode())
         lo=registration.query.all()
+        e=0
         for i in lo:
-            if email==i.email and p.hexdigest()==i.password:
+            if email==i.email:
+                e=1
+                if p.hexdigest()==i.password:
                 # em=i.email
                 # pa=i.password
-                session['email']=email
-                session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
-                break
+                  session['email']=email
+                  session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
+                  break
         
         # if em=="" and pa="":
         if 'email' in session:
             return redirect("/home")
         else:
-            flash("Invalid Email or Password Or you may have not signed up!!","warning")
+            if e==1:
+              flash("Invalid Email or Password","warning")
+            else:
+              flash("You may have not signed up!!","warning")
             return redirect("/")
 
     return render_template("login.html")
@@ -163,6 +174,7 @@ def profileupdate():
             re.lname=lname
             re.gender=gender
             re.phone=phone
+            session['logo']=(fname[0:1]+lname[0:1]).upper()
 
             db.session.add(re)
             db.session.commit()
@@ -280,6 +292,7 @@ def about():
         if request.method=='POST':
             f=request.form['feedback']
             if f=="":
+                flash("Please enter your feedback","warning")
                 return redirect("/AboutUs")
             else:
                 feedb=feedback(Email=session['email'],Feedb=f,Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
