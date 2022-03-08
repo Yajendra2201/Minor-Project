@@ -32,6 +32,7 @@ class registration(db.Model):
     gender=db.Column(db.String(7), nullable=False)
     phone=db.Column(db.Integer, nullable=False)
     email=db.Column(db.String(50), nullable=False)
+    role=db.Column(db.String(10),nullable=False)
     password=db.Column(db.String(20), nullable=False)
     
 class weather(db.Model):
@@ -54,6 +55,80 @@ class feedback(db.Model):
     Feedb=db.Column(db.String(50), nullable=False)
     Time=db.Column(db.String(20), nullable=False)
     
+
+@app.route("/admin/",methods=["GET","POST"])
+def adminlogin():
+    # global em,pa
+    if 'email' in session and session['role']=="Admin":
+        flash("You are already login","success")
+        return render_template('home.html',se=session['logo'])
+
+    if request.method=="POST":
+        email=request.form['email']
+        password=request.form['password']
+        
+        if email=="" or password=="":
+            flash("Please Enter Email or Password","warning")
+            return redirect("/admin/")
+        
+        p = hashlib.md5(password.encode())
+        lo=registration.query.all()
+        e=0
+        r=0
+        for i in lo:
+            if email==i.email:
+                e=1
+                if i.role=="Admin":
+                    r=1
+                    if p.hexdigest()==i.password:
+                # em=i.email
+                # pa=i.password
+                     session['email']=email
+                     session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
+                     session['role']=i.role
+                     break
+        # if em=="" and pa="":
+        if 'email' in session:
+            return redirect("/home")
+        else:
+            if e==1:
+              flash("Unauthorized Access","warning") 
+            elif r==1:
+              flash("Invalid Email or Password","warning")
+            else:
+              flash("You may have not signed up!!","warning")
+            return redirect("/admin/")
+
+    return render_template("adminlogin.html")
+
+@app.route("/admin/signup",methods=["GET","POST"])
+def adminsignup():
+
+    if 'email' in session:
+        flash("You are already login","success")
+        return render_template('home.html',se=session['logo'])
+
+
+    if request.method=="POST":
+        fname=request.form['fname']
+        lname=request.form['lname']
+        gender=request.form['gender']
+        phone=request.form['phone']
+        email=request.form['email']
+        password=request.form['password']
+        
+        if fname=="" or lname=="" or len(phone)!=10 or email=="" or password=="":
+            flash("Please fill all the feilds and phone number should be of 10 digits","warning")
+            return redirect("/admin/signup")
+        else:
+            p = hashlib.md5(password.encode())
+            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=p.hexdigest(),role="Admin")
+            db.session.add(log)
+            db.session.commit()
+            flash("Successfully Sign Up","success")
+            return redirect("/admin/")
+        
+    return render_template("adminregister.html")
 
 @app.route("/",methods=["GET","POST"])
 def login():
@@ -81,8 +156,8 @@ def login():
                 # pa=i.password
                   session['email']=email
                   session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
+                  session['role']=i.role
                   break
-        
         # if em=="" and pa="":
         if 'email' in session:
             return redirect("/home")
@@ -116,7 +191,7 @@ def signup():
             return redirect("/signup")
         else:
             p = hashlib.md5(password.encode())
-            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=p.hexdigest())
+            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=p.hexdigest(),role="User")
             db.session.add(log)
             db.session.commit()
             flash("Successfully Sign Up","success")
@@ -129,9 +204,14 @@ def logout():
     # global em,pa
     # em=""
     # pa=""
+    r=session['role']
     session.pop('email')
     session.pop('logo')
-    return redirect("/")
+    session.pop('role')
+    if r=="Admin":
+       return redirect("/admin/")
+    else:
+       return redirect("/")
 
 @app.route("/profile")
 def profile():
