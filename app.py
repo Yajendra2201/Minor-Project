@@ -93,9 +93,10 @@ def adminlogin():
             return redirect("/admin/home")
         else:
             if e==1:
-              flash("You are not authorized to access this page!!","warning") 
-            elif r==1:
-              flash("Invalid Email or Password!!","warning")
+                if r==1:
+                  flash("You are not authorized to access this page!!","warning") 
+                else:
+                  flash("Invalid Email or Password!!","warning")
             else:
               flash("You may have not signed up!!","warning")
             return redirect("/admin/")
@@ -138,6 +139,50 @@ def adminhome():
     else:
         return redirect("/admin/")
 
+@app.route("/admin/users")
+def users():
+    if 'email' in session and session['role']=="Admin":
+        allfeed=registration.query.filter_by(role='User').all()
+        return render_template("admin/user.html",allfeed=allfeed,se=session['logo'])
+    else:
+        return redirect("/admin/")
+
+@app.route("/admin/status/<string:email>")
+def status(email):
+    if 'email' in session and session['role']=="Admin":
+        s=registration.query.filter_by(email=email).first()
+        if s.status=="Unblocked":
+            s.status="Blocked"
+        else:
+            s.status="Unblocked"
+        a=s.status
+        db.session.add(s)
+        db.session.commit()
+        flash(email+" is "+a+" successfully","success")
+        return redirect("/admin/users")
+
+@app.route("/admin/profile/<string:email>")
+def pro(email):
+    if 'email' in session and session['role']=="Admin":
+        r=registration.query.filter_by(email=email).first()
+        f=feedback.query.filter_by(Email=email).all()
+        c=ContactUs.query.filter_by(email=email).all()
+        w=weather.query.filter_by(Email=email).all()
+        return render_template("admin/profile.html",r=r,f=f,c=c,w=w,se=session['logo'])
+
+@app.route("/admin//delete/<string:email>/<int:sno>")
+def delete(email,sno):
+    # if em !="" and pa !="":   
+    if 'email' in session and session['role']=="Admin":
+        f=feedback.query.filter_by(Email=email,sno=sno).first()
+        db.session.delete(f)
+        db.session.commit()
+        flash(email+" feedback is successfully deleted","success")
+        return redirect('/admin/profile/'+email)
+    else:
+        return redirect("/")
+
+
 @app.route("/",methods=["GET","POST"])
 def login():
     # global em,pa
@@ -156,9 +201,13 @@ def login():
         p = hashlib.md5(password.encode())
         lo=registration.query.all()
         e=0
+        s=0
         for i in lo:
             if email==i.email:
                 e=1
+                if i.status=="Blocked":
+                    s=1
+                    break
                 if p.hexdigest()==i.password:
                 # em=i.email
                 # pa=i.password
@@ -170,8 +219,11 @@ def login():
         if 'email' in session:
             return redirect("/home")
         else:
-            if e==1:
-              flash("Invalid Email or Password","warning")
+            if e==1:  
+              if s==1:
+                  flash("This email id is blocked by our admin!!","warning")
+              else:
+                   flash("Invalid Email or Password","warning")
             else:
               flash("You may have not signed up!!","warning")
             return redirect("/")
@@ -448,17 +500,6 @@ def contact():
 
 # contactus curd operations
 
-# @app.route("/delete/<int:sno>")
-# def delete(sno):
-#     # if em !="" and pa !="":   
-#     if 'email' in session:
-#         con=ContactUs.query.filter_by(sno=sno).first()
-#         db.session.delete(con)
-#         db.session.commit()
-#         flash("Your feedback is successfully deleted","success")
-#         return redirect('/history')
-#     else:
-#         return redirect("/")
     
 # @app.route("/update/<int:sno>",methods=['GET','POST'])
 # def update(sno):
