@@ -74,31 +74,30 @@ def adminlogin():
         
         p = hashlib.md5(password.encode())
         lo=registration.query.all()
-        e=0
-        r=0
+        
         for i in lo:
             if email==i.email:
-                e=1
-                if i.role=="Admin":
-                    r=1
-                    if p.hexdigest()==i.password:
+                if i.status=="Blocked":
+                    flash(i.email+" is blocked by our admin","warning")
+                    return redirect("/admin/")
+
+                if i.role=="User":
+                    flash("You are not authorized to access this page!!","warning")
+                    return redirect("/admin/")
+
+                if p.hexdigest()!=i.password:
+                    flash("Invalid Email or Password!!","warning")
+                    return redirect("/admin/")
                 # em=i.email
                 # pa=i.password
-                     session['email']=email
-                     session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
-                     session['role']=i.role
-                     break
-        # if em=="" and pa="":
+                session['email']=email
+                session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
+                session['role']=i.role
+                break
+            # if em=="" and pa="":
         if 'email' in session:
             return redirect("/admin/home")
         else:
-            if e==1:
-                if r==1:
-                  flash("You are not authorized to access this page!!","warning") 
-                else:
-                  flash("Invalid Email or Password!!","warning")
-            else:
-              flash("You may have not signed up!!","warning")
             return redirect("/admin/")
 
     return render_template("admin/adminlogin.html")
@@ -170,6 +169,22 @@ def pro(email):
         w=weather.query.filter_by(Email=email).all()
         return render_template("admin/profile.html",r=r,f=f,c=c,w=w,se=session['logo'])
 
+@app.route("/admin/Feedbacks")
+def feed():
+    if 'email' in session and session['role']=="Admin":
+        f=feedback.query.all()
+        return render_template("/admin/feedback.html",f=f,se=session['logo'])
+    else:
+        return redirect("/admin")
+
+@app.route("/admin/ContactUs")
+def quer():
+    if 'email' in session and session['role']=="Admin":
+        c=ContactUs.query.all()
+        return render_template("admin/queries.html",c=c,se=session['logo'])
+    else:
+        return redirect("/admin")
+
 @app.route("/admin//delete/<string:email>/<int:sno>")
 def delete(email,sno):
     # if em !="" and pa !="":   
@@ -181,6 +196,59 @@ def delete(email,sno):
         return redirect('/admin/profile/'+email)
     else:
         return redirect("/")
+
+
+@app.route("/admin/profile")
+def adprofile():
+    if 'email' in session and session['role']=="Admin":
+        lo=registration.query.filter_by(email=session['email']).first()
+        return render_template("/admin/myprofile.html",lo=lo,se=session['logo'])
+    else:
+        return redirect("/admin/")
+
+@app.route("/admin/profileupdate",methods=["GET","POST"])
+def adprofileupdate():
+    if 'email' in session and session['role']=="Admin":
+        if request.method=='POST':
+            fname=request.form['fname']
+            lname=request.form['lname']
+            gender=request.form['gender']
+            phone=request.form['phone']
+            cpass=request.form['cpassword']
+            npass=request.form['npassword']
+            copass=request.form['copassword']
+
+            re=registration.query.filter_by(email=session['email']).first()
+            
+            if cpass!="":
+                c=hashlib.md5(cpass.encode())
+                if c.hexdigest()!=re.password:
+                    flash("Invalid Current Password","warning")
+                    return redirect("/admin/profile")
+                else:
+                    if npass=="":
+                        flash("New password is empty string","warning")
+                        return redirect("/admin/profile")
+                    
+                    elif npass!=copass:
+                        flash("New and Confirm password does not matched","warning")
+                        return redirect("/admin/profile")
+                    n=hashlib.md5(npass.encode())
+                    re.password=n.hexdigest()            
+            re.fname=fname
+            re.lname=lname
+            re.gender=gender
+            re.phone=phone
+            session['logo']=(fname[0:1]+lname[0:1]).upper()
+
+            db.session.add(re)
+            db.session.commit()
+            flash("Your profile is successfully updated","success")
+
+            return redirect('/admin/profile')
+
+    else:
+        redirect("/admin/")
 
 
 @app.route("/",methods=["GET","POST"])
@@ -221,7 +289,7 @@ def login():
         else:
             if e==1:  
               if s==1:
-                  flash("This email id is blocked by our admin!!","warning")
+                  flash(i.email+" is blocked by our admin!!","warning")
               else:
                    flash("Invalid Email or Password","warning")
             else:
@@ -324,7 +392,6 @@ def profileupdate():
 
     else:
         redirect("/")
-
 
 @app.route("/home")
 def hello_world():
