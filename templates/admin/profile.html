@@ -105,7 +105,7 @@
 </h6> 
 </form>
 
-<h1 style="margin: 4% 0%;">Your Feedbacks</h1>
+<h1 style="margin: 4% 0%;">My Feedbacks</h1>
 
 
 {% if f|length==0 %}
@@ -139,7 +139,7 @@
 </tbody>
 </table>
 
-<h1 style="margin: 4% 0%;">Your Queries</h1>
+<h1 style="margin: 4% 0%;">My Queries</h1>
 
 
 {% if c|length==0 %}
@@ -152,6 +152,7 @@
       <tr>
         <th scope="col"  style="width:10%">S No</th>
         <th scope="col">Queries</th>
+        <th scope="col" colspan="2">Response</th>
       </tr>
     </thead>
     <tbody>
@@ -159,6 +160,15 @@
 <tr>
 <th scope="row">{{loop.index}}</th>
 <td>{{rows.msg}}</td>
+  <form action="/admin/response/{{rows.email}}/{{rows.sno}}" method="POST">
+    <td>
+    <textarea class="form-control form-control-sm" type="text" name="response" placeholder="Response" rows="2" cols="5"></textarea> 
+    </td>
+    <td>
+    <button type="submit" class="btn btn-outline-dark btn-sm ">Submit</button>
+    </td>
+  </form>
+
 </tr>
 {% endfor %}
 {% endif %}

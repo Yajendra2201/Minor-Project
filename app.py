@@ -24,6 +24,7 @@ class ContactUs(db.Model):
     phone=db.Column(db.Integer, nullable=False)
     email=db.Column(db.String(20), nullable=False)
     msg=db.Column(db.String(500), nullable=False)
+    response=db.Column(db.String(500), nullable=True)
 
 class registration(db.Model):
     sno=db.Column(db.Integer, primary_key=True)
@@ -185,7 +186,7 @@ def quer():
     else:
         return redirect("/admin")
 
-@app.route("/admin//delete/<string:email>/<int:sno>")
+@app.route("/admin/delete/<string:email>/<int:sno>")
 def delete(email,sno):
     # if em !="" and pa !="":   
     if 'email' in session and session['role']=="Admin":
@@ -193,6 +194,21 @@ def delete(email,sno):
         db.session.delete(f)
         db.session.commit()
         flash(email+" feedback is successfully deleted","success")
+        return redirect('/admin/profile/'+email)
+    else:
+        return redirect("/")
+
+@app.route("/admin/response/<string:email>/<int:sno>",methods=['GET','POST'])
+def resp(email,sno):
+    # if em !="" and pa !="":   
+    if 'email' in session and session['role']=="Admin":
+        if request.method=='POST':
+            r=request.form['response']
+            c=ContactUs.query.filter_by(email=email,sno=sno).first()
+            c.response=r
+            db.session.add(c)
+            db.session.commit()
+            flash(email+" response send is successfully","success")
         return redirect('/admin/profile/'+email)
     else:
         return redirect("/")
@@ -249,7 +265,6 @@ def adprofileupdate():
 
     else:
         redirect("/admin/")
-
 
 @app.route("/",methods=["GET","POST"])
 def login():
@@ -553,7 +568,7 @@ def contact():
                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
                 redirect("/ContactUs")
             else:
-                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg)
+                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg,response='Null')
                 db.session.add(con)
                 db.session.commit()
                 flash("Your Message is send successfully","success")
