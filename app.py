@@ -194,7 +194,7 @@ def delete(email,sno):
         db.session.delete(f)
         db.session.commit()
         flash(email+" feedback is successfully deleted","success")
-        return redirect('/admin/profile/'+email)
+        return redirect('/admin/users')
     else:
         return redirect("/")
 
@@ -209,7 +209,7 @@ def resp(email,sno):
             db.session.add(c)
             db.session.commit()
             flash(email+" response send is successfully","success")
-        return redirect('/admin/profile/'+email)
+        return redirect('/admin/users')
     else:
         return redirect("/")
 
@@ -552,6 +552,33 @@ def feedb():
         next = "/feedback?page="+ str(page+1)
     
     return render_template('feedback.html',se=session['logo'],feed=feed, prev=prev, next=next)
+
+
+@app.route("/queries")
+def queries():
+    c = ContactUs.query.filter_by().all()
+    last = math.ceil(len(c)/2)
+    print(last)
+    page = request.args.get('page')
+    if (not str(page).isnumeric()):
+        page = 1
+    page = int(page)
+    c = c[(page-1)*2:(page-1)*2+ 2]
+    
+    if last==1:
+        prev = "#"
+        next = "#"
+    elif page==1:
+        prev = "#"
+        next = "/queries?page="+ str(page+1)
+    elif page==last:
+        prev = "/queries?page="+ str(page-1)
+        next = "#"
+    else:
+        prev = "/queries?page="+ str(page-1)
+        next = "/queries?page="+ str(page+1)
+    
+    return render_template('queries.html',se=session['logo'],queries=c, prev=prev, next=next)
 
 @app.route("/ContactUs",methods=["GET","POST"])
 def contact():

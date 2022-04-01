@@ -1,13 +1,9 @@
-{% extends 'admin/base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}Profile title{% endblock title %}
+{% block title %}Queries Title{% endblock title %}
 
 {% block body %}
 
-<img class="d-block w-100" src="{{url_for('static',filename='img/p.jpg')}}" style="opacity: 40%;">
-
-<div class="container justify-content-center my-2" style="margin: 3% 15%; position: absolute; top: 5%; color: black;">
-     
 {% with messages = get_flashed_messages(with_categories=true) %}  
 {% if messages %}  
       {% for cato,message in messages %}
@@ -35,44 +31,54 @@
       {% endfor %}  
 {% endif %}  
 {% endwith %}
-<h1 style="margin: 4% 0%;">Your Queries</h1>
 
+<h1 class="container text-center my-3">
+   Queries by users
+</h1>
 
-{% if c|length==0 %}
+{% if queries|length ==0 %}
+
 <div class="alert alert-info text-center" role="alert">
     No Queries Availabe!!!
   </div>
 {% else %}
-<table class="table table-hover my-4 text-center">
-    <thead> 
-      <tr>
-        <th scope="col"  style="width:10%">S No</th>
-        <th scope="col">Email</th>
-        <th scope="col">Queries</th>
-        <th scope="col" colspan="2">Response</th>
-      </tr>
-    </thead>
-    <tbody>
-{% for rows in c %}
-<tr>
-<th scope="row">{{loop.index}}</th>
-<td>{{rows.email}}</td>
-<td>{{rows.msg}}</td>
-<form action="/admin/response/{{rows.email}}/{{rows.sno}}" method="POST">
-  <td>
-  <textarea class="form-control form-control-sm" type="text" name="response" rows="2" cols="5">{{rows.response}}</textarea> 
-  </td>
-  <td>
-  <button type="submit" class="btn btn-outline-dark btn-sm ">Submit</button>
-  </td>
-</form>
-</tr>
-{% endfor %}
-{% endif %}
-</tbody>
-</table>
 
+{% for q in queries %}
+<div class="container text-left" style="margin-left: auto; margin-right: auto; padding: 2% 10%;">
+<h4 class="container py-1">
+    Posted by: -
+</h4>
+
+<h6 class="container text-center">
+    {{q.email}}
+</h6>
+
+<h4 class="container py-1">
+    Query: -
+</h4>
+
+<h6 class="container text-center">
+    {{q.msg}}
+</h6>
+
+<h4 class="container py-1">
+    Response: -
+</h4>
+
+<h6 class="container text-center">
+    {{q.response}}
+</h6>
+
+<hr style="margin-left: auto; margin-right: auto;">
 
 </div>
+{% endfor %}
+<div class="container">
+<a class="btn btn-outline-dark" href="{{prev}}" style="margin: 0% 62% 0% 11%;">&larr; Previous</a>
+<a class="btn btn-outline-dark" href="{{next}}">Next &rarr;</a>
+</div>
+<hr style="margin-left: auto; margin-right: auto;">
+
+{% endif %}
 
 {% endblock body %}
