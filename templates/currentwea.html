@@ -4,9 +4,12 @@
 
 {% block body %}  
 
-<link rel="stylesheet" href="{{url_for('static',filename='css/logo.css')}}">
+  <!-- we do section -->
 
-<h1 class="text-center my-3">Get Current Weather Details</h1>
+  <section class="wedo_section layout_padding section_pr">
+    <div class="container" style="background-color: white;">
+
+        <h1 class="text-center" style="padding: 2% 0% 0% 0%;">Get Current Weather Details</h1>
 <div class="justify-content-center">
 <form action="/currentwea" method='POST'>
     <div class="input-group" style="padding: 2% 26% 2% 26%;">
@@ -15,24 +18,29 @@
         </div>
         <input type="text" class="form-control" name="city">
       </div>
-      <button type="submit" style="padding: 0% 1% 0% 1%; margin: 2% 47%;">Submit</button>
+    
+      <button type="submit" class="btn btn-outline-dark" style="margin: 1% 0% 1% 44%;">Submit</button><br>
+      <a href="/history" class="btn btn-outline-dark" style="margin: 1% 0% 3% 40%;">Your Request History</a>
+    
 </form>
 
 {% if l['0'] == 0 %}
 
-    <h1 class="blockquote text-center">
+    <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;">
         Please enter city name
     </h1>
 
 {% elif l['cod']=='404'%}
 
-<h1 class="blockquote text-center">
+<h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;">
     {{l['message']}}
 </h1>
 
 {% else %}
 
-    <div class="blockquote justify-content-center text-center">
+
+<!-- <div class="blockquote justify-content-center text-center">
+
         City: - {{l['name']}}
         <hr class="hr"> 
         Coordinates: -<br>
@@ -58,8 +66,42 @@
         Date time: - {{l['dth']}}
         <hr class="hr">
 
+        
+    </div> -->
 
+    
+<section class="vh-40" style="background-color: #f5f6f7;">
+    <div class="container py-5 h-80">
+      <div class="row d-flex justify-content-center align-items-center h-50">
+        <div class="col-md-10 col-lg-8 col-xl-6">
+  
+            <div class="bg-image" style="border-radius: 35px;">
+              <img
+                src="{{url_for('static',filename='images/snow.webp')}}"
+                class="card-img"
+                alt="weather"
+                style="border-radius: 8%"
+              />
+              <div class="mask" style="background-color: rgba(190, 216, 232, .8);"></div>
+            </div>
+            <div class="card-img-overlay text-dark p-5">
+              <h4 class="mb-0">{{l['name']}}</h4>
+              <p class="display-2 my-3">{{l['main']['temp']}} °C</p>
+              <p class="mb-2"><strong>Feels Like: {{l['main']['feels_like']-273.15}} °C</strong></p>
+              <h5 style="margin: 6% 0% 0% 0%;">{{l['weather'][0]['main']}}</h5>
+            </div>
+  
+        </div>
+      </div>
     </div>
+  </section>
 
 {% endif %}
+
+    </div>
+  </section>
+
+  <!-- end we do section -->
+
+
 {% endblock body %}

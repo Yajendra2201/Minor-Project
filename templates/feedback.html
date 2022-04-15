@@ -32,53 +32,61 @@
 {% endif %}  
 {% endwith %}
 
-<h1 class="container text-center my-3">
-    Our Feedbacks
-</h1>
-
-{% if feed|length ==0 %}
-
-<div class="alert alert-info text-center" role="alert">
-    No Feedback Availabe!!!
+<section class="wedo_section layout_padding section_pr">
+  <div class="container" style="background-color: white;">
+  
+    <h1 class="container text-center my-3">
+      Our Feedbacks
+  </h1>
+  
+  {% if feed|length ==0 %}
+  
+  <div class="alert alert-info text-center" role="alert">
+      No Feedback Availabe!!!
+    </div>
+  {% else %}
+  
+  {% for f in feed %}
+  <div class="container text-left" style="margin-left: auto; margin-right: auto; padding: 2% 10%;">
+  <h4 class="container py-1">
+      Posted by: -
+  </h4>
+  
+  <h6 class="container text-center">
+      {{f.Email}}
+  </h6>
+  
+  <h4 class="container py-1">
+      Feedback: -
+  </h4>
+  
+  <h6 class="container text-center">
+      {{f.Feedb}}
+  </h6>
+  
+  <h4 class="container py-1">
+      Posted on: -
+  </h4>
+  
+  <h6 class="container text-center">
+      {{f.Time}}
+  </h6>
+  
+  <hr style="margin-left: auto; margin-right: auto;">
+  
   </div>
-{% else %}
+  {% endfor %}
+  <div class="container">
+  <a class="btn btn-outline-dark" href="{{prev}}" style="margin: 0% 62% 0% 11%;">&larr; Previous</a>
+  <a class="btn btn-outline-dark" href="{{next}}">Next &rarr;</a>
+  </div>
+  <hr style="margin-left: auto; margin-right: auto;">
+  
+  {% endif %}
+  
 
-{% for f in feed %}
-<div class="container text-left" style="margin-left: auto; margin-right: auto; padding: 2% 10%;">
-<h4 class="container py-1">
-    Posted by: -
-</h4>
+  </div>
+</section>
 
-<h6 class="container text-center">
-    {{f.Email}}
-</h6>
-
-<h4 class="container py-1">
-    Feedback: -
-</h4>
-
-<h6 class="container text-center">
-    {{f.Feedb}}
-</h6>
-
-<h4 class="container py-1">
-    Posted on: -
-</h4>
-
-<h6 class="container text-center">
-    {{f.Time}}
-</h6>
-
-<hr style="margin-left: auto; margin-right: auto;">
-
-</div>
-{% endfor %}
-<div class="container">
-<a class="btn btn-outline-dark" href="{{prev}}" style="margin: 0% 62% 0% 11%;">&larr; Previous</a>
-<a class="btn btn-outline-dark" href="{{next}}">Next &rarr;</a>
-</div>
-<hr style="margin-left: auto; margin-right: auto;">
-
-{% endif %}
 
 {% endblock body %}

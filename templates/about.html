@@ -32,20 +32,30 @@
 {% endif %}  
 {% endwith %}
 
-<h3 class="text-center my-3">
-    We are glad to inform you that from our site you can check current weather<br>
-    Also you can forecast 5 day weather.
-</h3>
-<h1>
-<form class="container my-3" action="/AboutUs" method="POST">
-    <div class="form-group mx-4">
-      <label for="exampleFormControlTextarea1">Feedback: -</label>
-      <textarea class="form-control my-3" id="exampleFormControlTextarea1" rows="3" name="feedback"></textarea>
+  <!-- we do section -->
+
+  <section class="wedo_section layout_padding section_pr">
+    <div class="container" style="background-color: white;" background="{{url_for('static',filename='images/Farming-Wallpaper-11617.jpg')}}">
+
+      <h3 class="text-center" style="padding: 2% 0% 0% 0%;">
+        We are glad to inform you that from our site you can check current weather<br>
+        Also you can forecast 5 day weather.
+    </h3>
+    <h1>
+    <form class="container my-3" action="/AboutUs" method="POST">
+        <div class="form-group mx-4">
+          <label for="exampleFormControlTextarea1">Feedback: -</label>
+          <textarea class="form-control my-3" id="exampleFormControlTextarea1" rows="3" name="feedback"></textarea>
+        </div>
+    
+        <button type="submit" class="btn btn-outline-dark mb-2 mx-4">Submit</button>
+    <a href="/feedback"  class="btn btn-outline-dark mx-4">Feedbacks</a>
+    
+    </form>
+    </h1>
+    
+
     </div>
-
-    <button type="submit" class="btn btn-primary mb-2 mx-4">Submit</button>
-
-</form>
-</h1>
+  </section>
 
 {% endblock body %}

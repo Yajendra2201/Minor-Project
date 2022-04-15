@@ -4,10 +4,6 @@
 
 {% block body %}
 
-<img class="d-block w-100" src="{{url_for('static',filename='img/p.jpg')}}" style="opacity: 40%;">
-
-<div class="container justify-content-center" style="margin: 3% 10%; position: absolute; top: 5%; color: black;">
-  
     {% with messages = get_flashed_messages(with_categories=true) %}  
     {% if messages %}  
           {% for cato,message in messages %}
@@ -18,7 +14,7 @@
             </symbol>
           </svg>
         
-          <div class="alert alert-{{cato}} alert-dismissible d-flex align-items-center justify-content-between" role="alert" style="margin: -9px -7.7% 0% -13%;">
+          <div class="alert alert-{{cato}} alert-dismissible d-flex align-items-center justify-content-between" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
                 {{message}}
                 <button type="button" class="btn btn-light btn-outline-{{cato}} btn-sm" data-bs-dismiss="alert" aria-label="Close" style="margin:0% 0%">Dismiss</button>
@@ -28,52 +24,61 @@
     {% endif %}  
     {% endwith %}    
 
-       <h1 class="text-center my-4" style="margin: 2% 0%;">Your Weather check History</h1>
-        {% if allfeed|length==0 %}
-        <div class="alert alert-info text-center" role="alert">
-            No History Availabe!!!
-          </div>
-        {% else %}
-        <table class="table table-hover my-4 text-center">
-            <thead> 
-              <tr>
-                <th scope="col"  style="width:10%">S No</th>
-                <th scope="col">City</th>
-                <th scope="col">Longitude</th>
-                <th scope="col">Latitude</th>
-                <th scope="col">Weather</th>
-                <th scope="col">Temperature</th>
-                <th scope="col">Feels Like</th>
-                <th scope="col">Pressure</th>
-                <th scope="col">Humidity</th>
-                <th scope="col">Wind</th>
-                <th scope="col">Time</th>
-                <th scope="col">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-    {% for rows in allfeed %}
-      <tr>
-        <th scope="row">{{loop.index}}</th>
-        <td>{{rows.City}}</td>
-        <td>{{rows.Longitude}}</td>
-        <td>{{rows.Latitude}}</td>
-        <td>{{rows.Weather}}</td>
-        <td>{{rows.Temperature}}</td>
-        <td>{{rows.Feels_Like}}</td>
-        <td>{{rows.Pressure}}</td>
-        <td>{{rows.Humidity}}</td>
-        <td>{{rows.Wind}}</td>
-        <td>{{rows.Time}}</td>
-        <td>
-          <a href="/deletehistory/{{rows.sno}} " type="button" class="btn btn-outline-dark btn-sm">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
-    {% endif %}
-    </tbody>
-  </table>
+  <!-- we do section -->
+
+  <section class="wedo_section layout_padding section_pr">
+    <div class="container" style="background-color: white;">
+
+      <h1 class="text-center my-4">Your Weather check History</h1>
+      {% if allfeed|length==0 %}
+      <div class="alert alert-info text-center" role="alert">
+          No History Availabe!!!
+        </div>
+      {% else %}
+      <table class="table table-hover my-4 text-center">
+          <thead> 
+            <tr>
+              <th scope="col"  style="width:10%">S No</th>
+              <th scope="col">City</th>
+              <th scope="col">Longitude</th>
+              <th scope="col">Latitude</th>
+              <th scope="col">Weather</th>
+              <th scope="col">Temperature</th>
+              <th scope="col">Feels Like</th>
+              <th scope="col">Pressure</th>
+              <th scope="col">Humidity</th>
+              <th scope="col">Wind</th>
+              <th scope="col">Time</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+  {% for rows in allfeed %}
+    <tr>
+      <th scope="row">{{loop.index}}</th>
+      <td>{{rows.City}}</td>
+      <td>{{rows.Longitude}}</td>
+      <td>{{rows.Latitude}}</td>
+      <td>{{rows.Weather}}</td>
+      <td>{{rows.Temperature}}</td>
+      <td>{{rows.Feels_Like}}</td>
+      <td>{{rows.Pressure}}</td>
+      <td>{{rows.Humidity}}</td>
+      <td>{{rows.Wind}}</td>
+      <td>{{rows.Time}}</td>
+      <td>
+        <a href="/deletehistory/{{rows.sno}} " type="button" class="btn btn-outline-dark btn-sm">Delete</a>
+      </td>
+  </tr>
+  {% endfor %}
+  {% endif %}
+  </tbody>
+</table>
 
 </div>
+
+
+    </div>
+  </section>
 
 {% endblock body %}

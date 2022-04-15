@@ -432,6 +432,7 @@ def currentwea():
                if l['cod']!='404':
                     t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
                     l['dth']=t
+                    l['main']['temp']=round(l['main']['temp']-273.15,2)
 
                     we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Wind=l['wind']['speed'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
                     db.session.add(we)
@@ -544,9 +545,11 @@ def feedb():
     elif page==1:
         prev = "#"
         next = "/feedback?page="+ str(page+1)
+        flash("Your are on latest feedback","info")
     elif page==last:
         prev = "/feedback?page="+ str(page-1)
         next = "#"
+        flash("Your are on oldest feedback","info")
     else:
         prev = "/feedback?page="+ str(page-1)
         next = "/feedback?page="+ str(page+1)
@@ -571,9 +574,12 @@ def queries():
     elif page==1:
         prev = "#"
         next = "/queries?page="+ str(page+1)
+        flash("Your are on latest queries","info")
+        
     elif page==last:
         prev = "/queries?page="+ str(page-1)
         next = "#"
+        flash("Your are on oldest queries","info")
     else:
         prev = "/queries?page="+ str(page-1)
         next = "/queries?page="+ str(page+1)
@@ -591,8 +597,8 @@ def contact():
             phone=request.form['phone']
             email=request.form['email']
             msg=request.form['feedb']
-            if fname=="" or lname=="" or len(phone)!=10 or email=="" or msg=="":
-                flash("Please fill all the feilds and phone number should be of 10 digits","warning")
+            if msg=="":
+                flash("Please enter your","warning")
                 redirect("/ContactUs")
             else:
                 con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg,response='Null')

@@ -4,10 +4,6 @@
 
 {% block body %}
 
-<img class="d-block w-100" src="{{url_for('static',filename='img/p.jpg')}}" style="opacity: 40%;">
-
-<div class="container justify-content-center my-2" style="margin: 3% 15%; position: absolute; top: 5%; color: black;">
-     
 {% with messages = get_flashed_messages(with_categories=true) %}  
 {% if messages %}  
       {% for cato,message in messages %}
@@ -36,100 +32,110 @@
 {% endif %}  
 {% endwith %}
 
-  <h1 style="margin: 4% 0%;">My Profile</h1>
+  <!-- we do section -->
 
-<form action="/profileupdate" method="POST">
-  <h6>
-    <div class="form-group row my-3">
-        <label for="fname" class="col-sm-2 col-form-label">First Name</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="fname" id="fname" value="{{lo.fname}}" style="width: 50%;">
-        </div>
-      </div>
-  
-      <div class="form-group row my-3">
-        <label for="lname" class="col-sm-2 col-form-label">Last Name</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="lname" name="lname" value="{{lo.lname}}" style="width: 50%;">
-        </div>
-      </div>
-     
- <fieldset class="form-group my-3">
-    <div class="row">
-      <legend class="col-form-label col-sm-2 pt-0">Gender</legend>
-      
-      {% if lo.gender=='Male' %}
+  <section class="wedo_section layout_padding section_pr">
+    <div class="container" style="background-color: white;">
+
+      <h1 style="margin: 4% 0%;padding: 2% 0% 0% 0%;">My Profile</h1>
+
+      <form action="/profileupdate" method="POST">
+        <h6>
+          <div class="form-group row my-3">
+              <label for="fname" class="col-sm-2 col-form-label">First Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="fname" id="fname" value="{{lo.fname}}" style="width: 50%;">
+              </div>
+            </div>
+        
+            <div class="form-group row my-3">
+              <label for="lname" class="col-sm-2 col-form-label">Last Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="lname" name="lname" value="{{lo.lname}}" style="width: 50%;">
+              </div>
+            </div>
+           
+       <fieldset class="form-group my-3">
+          <div class="row">
+            <legend class="col-form-label col-sm-2 pt-0">Gender</legend>
             
-      {% set male='checked'%}
-      {% set female=''%}
-
-      {% else %}
-
-      {% set female='checked'%}
-      {% set male=''%}
-
-      {% endif %}
+            {% if lo.gender=='Male' %}
+                  
+            {% set male='checked'%}
+            {% set female=''%}
       
-
-      <div class="col-sm-10">
-        <div class="form-check my-2">
-          <input class="form-check-input" type="radio" name="gender" id="gridRadios1" value="Male" {{male}}>
-          <label class="form-check-label" for="gridRadios1">
-            Male
-          </label>
+            {% else %}
+      
+            {% set female='checked'%}
+            {% set male=''%}
+      
+            {% endif %}
+            
+      
+            <div class="col-sm-10">
+              <div class="form-check my-2">
+                <input class="form-check-input" type="radio" name="gender" id="gridRadios1" value="Male" {{male}}>
+                <label class="form-check-label" for="gridRadios1">
+                  Male
+                </label>
+              </div>
+              <div class="form-check my-2">
+                <input class="form-check-input" type="radio" name="gender" id="gridRadios2" value="Female" {{female}}>
+                <label class="form-check-label" for="gridRadios2">
+                  Female
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      
+        <div class="form-group row my-3">
+          <label for="phone" class="col-sm-2 col-form-label">Phone Number</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="phone" name="phone" value="{{lo.phone}}" style="width: 50%;">
+          </div>
         </div>
-        <div class="form-check my-2">
-          <input class="form-check-input" type="radio" name="gender" id="gridRadios2" value="Female" {{female}}>
-          <label class="form-check-label" for="gridRadios2">
-            Female
-          </label>
+       
+        <div class="form-group row my-3">
+          <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="inputEmail3" name="email" value="{{lo.email}}" style="width: 50%;" readonly>
+          </div>
         </div>
+      
+        <div class="form-group row my-3">
+          <label for="password" class="col-sm-2 col-form-label">Current Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name="cpassword" placeholder="Current Password" style="width: 50%;">
+          </div>
+        </div>
+      
+        <div class="form-group row my-3">
+          <label for="password" class="col-sm-2 col-form-label">New Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name="npassword" placeholder="New Password" style="width: 50%;">
+          </div>
+        </div>
+      
+        <div class="form-group row my-3">
+          <label for="password" class="col-sm-2 col-form-label">Confirm Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name="copassword" placeholder="Confirm Password" style="width: 50%;">
+          </div>
+        </div>
+      
+        <div class="form-group row my-3">
+          <div class="col-sm-10">
+            <button type="submit" class="btn btn-outline-dark my-4">Update</button>
+          </div>
+        </div>
+      </h6> 
+      </form>
       </div>
-    </div>
-  </fieldset>
+      
+    
 
-  <div class="form-group row my-3">
-    <label for="phone" class="col-sm-2 col-form-label">Phone Number</label>
-    <div class="col-sm-10">
-      <input type="number" class="form-control" id="phone" name="phone" value="{{lo.phone}}" style="width: 50%;">
     </div>
-  </div>
- 
-  <div class="form-group row my-3">
-    <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-    <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputEmail3" name="email" value="{{lo.email}}" style="width: 50%;" readonly>
-    </div>
-  </div>
-
-  <div class="form-group row my-3">
-    <label for="password" class="col-sm-2 col-form-label">Current Password</label>
-    <div class="col-sm-10">
-      <input type="password" class="form-control" id="password" name="cpassword" placeholder="Current Password" style="width: 50%;">
-    </div>
-  </div>
-
-  <div class="form-group row my-3">
-    <label for="password" class="col-sm-2 col-form-label">New Password</label>
-    <div class="col-sm-10">
-      <input type="password" class="form-control" id="password" name="npassword" placeholder="New Password" style="width: 50%;">
-    </div>
-  </div>
-
-  <div class="form-group row my-3">
-    <label for="password" class="col-sm-2 col-form-label">Confirm Password</label>
-    <div class="col-sm-10">
-      <input type="password" class="form-control" id="password" name="copassword" placeholder="Confirm Password" style="width: 50%;">
-    </div>
-  </div>
-
-  <div class="form-group row my-3">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-outline-dark">Update</button>
-    </div>
-  </div>
-</h6> 
-</form>
-</div>
+  </section>
 
 {% endblock body %}
