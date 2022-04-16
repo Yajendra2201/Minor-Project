@@ -77,14 +77,14 @@
   
             <div class="bg-image" style="border-radius: 35px;">
               <img
-                src="{{url_for('static',filename='images/snow.webp')}}"
+                src="{{url_for('static',filename='images/'+im)}}"
                 class="card-img"
                 alt="weather"
                 style="border-radius: 8%"
               />
               <div class="mask" style="background-color: rgba(190, 216, 232, .8);"></div>
             </div>
-            <div class="card-img-overlay text-dark p-5">
+            <div class="card-img-overlay p-5" style="color: {{co}};">
               <h4 class="mb-0">{{l['name']}}</h4>
               <p class="display-2 my-3">{{l['main']['temp']}} °C</p>
               <p class="mb-2"><strong>Feels Like: {{l['main']['feels_like']-273.15}} °C</strong></p>

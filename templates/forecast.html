@@ -11,7 +11,7 @@
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
 
-      <h1 class="text-center" style="padding: 2% 0% 0% 0%;">Weather Forcest of next 5 days</h1>
+      <h1 class="text-center" style="padding: 2% 0% 0% 0%;">Weather Forecast of next 16 days</h1>
       
       <div class="justify-content-center">
         <form action="/forecast" method='POST'>
@@ -30,135 +30,58 @@
                 Please enter city name
             </h1>
         
-        {% elif l['cod']=='404'%}
-        
-        <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;">
-            {{l['message']}}
-        </h1>
-        
         {% else %}
       
         <!-- TODO main, description -->
-      <div class="container text-center">
-      
-          <h1>Weather Details: - </h1><br>
-          <h4>City: - {{l['city']['name']}}</h4>
-         <h5>
-        <select class="mdb-select md-form" style="margin: 2% 0%; padding: 1% 2% 1% 2%; border-radius: 25%">
-          
-          {% for i in we%}
-          <option>
-            Time: - {{i}}
-            Main: - {{we[i]['main']}}
-            Description: - {{we[i]['description']}}
-           </option>
-          {% endfor %}
+        {% for T in d %}
+        <section class="vh-10" style="background-color: #C1CFEA;">
+          <div class="container h-100">
         
-        </select>
-      </h5>
-      </div>
-      
-      <canvas id="temperature" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
-      
-      <canvas id="wind" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
-      
-      <canvas id="pressure" width="1200" height="1000" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
-      
-      <canvas id="hummidity" width="1200" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
-      
-      <script>
-        let d=JSON.parse({{ d | tojson}})
-        let t=JSON.parse({{ t | tojson}})
-        let h=JSON.parse({{ h | tojson}})
-        let w=JSON.parse({{ w | tojson}})
-        let p=JSON.parse({{ p | tojson}})
+            <div class="row d-flex justify-content-center align-items-center h-100" style="color: #282828;">
+              <div class="col-md-9 col-lg-7 col-xl-5">
         
-        var tem=document.getElementById("temperature").getContext("2d");
-        var temperature= new Chart(tem,{
-          type: "line",
-          data: {
-            labels: d,
-            datasets: [
-              {
-                label: "Changing temperature",
-                data: t,
-                fill: true,
-                borderColor: "rgb(204, 0, 0)",
-                lineTension: 0.5
-              
-            }
-            ]
-          },
-          options:{
-            responsive: false
-          }
-        });
-      
-        var win=document.getElementById("wind").getContext("2d");
-        var wind= new Chart(win,{
-          type: "line",
-          data: {
-            labels: d,
-            datasets: [
-              {
-                label: "Changing Wind Speed",
-                data: w,
-                fill: true,
-                borderColor: "rgb(75,192,192)",
-                lineTension: 0.5
-              
-            }
-            ]
-          },
-          options:{
-            responsive: false
-          }
-        });
-      
-        var per=document.getElementById("pressure").getContext("2d");
-        var pressure= new Chart(per,{
-          type: "line",
-          data: {
-            labels: d,
-            datasets: [
-              {
-                label: "Changing Pressure",
-                data: p,
-                fill: true,
-                borderColor: "rgb(0,102,51)",
-                lineTension: 0.5
-              
-            }
-            ]
-          },
-          options:{
-            responsive: false
-          }
-        });
-      
-        var hum=document.getElementById("hummidity").getContext("2d");
-        var hummidity= new Chart(hum,{
-          type: "line",
-          data: {
-            labels: d,
-            datasets: [
-              {
-                label: "Changing humidity",
-                data: h,
-                fill: true,
-                borderColor: "rgb(96,96,96)",
-                lineTension: 0.5
-              
-            }
-            ]
-          },
-          options:{
-            responsive: false
-          }
-        });
-      
-      </script> 
-      
+                <div class="card mb-4 gradient-custom" style="border-radius: 25px;">
+                  <div class="card-body p-4">
+        
+                    <div id="demo1" class="carousel slide" data-ride="carousel">
+                      <!-- Indicators -->
+                      <ul class="carousel-indicators mb-0">
+                        <li data-target="#demo1" data-slide-to="0" class="active"></li>
+                        <li data-target="#demo1" data-slide-to="1"></li>
+                        <li data-target="#demo1" data-slide-to="2"></li>
+                      </ul>
+                      <!-- Carousel inner -->
+
+                      <div class="carousel-inner">
+                        <div class="carousel-item active">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <h2 class="display-2"><strong>{{T[0]}} °C</strong></h2>
+                              <p class="text-muted mb-0">City: - {{l['city_name']}}</p>
+                              <p class="text-muted mb-0">Pressure: - {{T[1]}}</p>
+                              <p class="text-muted mb-0">Humidity: - {{T[2]}}</p>
+                              <p class="text-muted mb-0">Wind Speed: - {{T[3]}}</p><br>
+                            
+                              <p class="text-muted mb-0" style="font-weight: bold;font-size: 86%;">Date: - {{T[4]}}</p>
+                            </div>
+                            <div>
+                              
+                              <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-weather/ilu3.webp"
+                                width="150px"> -->
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+        
+                    </div>
+        
+                  </div>
+                </div>
+        
+          </div>
+        </section>
+
+        {% endfor %}
       {% endif %}
       
 

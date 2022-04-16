@@ -420,6 +420,8 @@ def hello_world():
 def currentwea():
     # if em !="" and pa !="":
     if 'email' in session:
+        im=""
+        co=""
         if request.method=='POST':
             c=request.form['city']
             if c=="":
@@ -437,8 +439,25 @@ def currentwea():
                     we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Wind=l['wind']['speed'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
                     db.session.add(we)
                     db.session.commit()
+                    
+                    if l['weather'][0]['main']=="Clear":
+                        im="Clear Sky.jpeg"
+                        co="black"
+                    elif l['weather'][0]['main']=="Snow" or l['weather'][0]['main']=="Winter":
+                        im="Winter.jpeg"
+                        co="black"
+                    elif l['weather'][0]['main']=="Sunny":
+                        im="Sunny.jpeg"
+                        co="black"
+                    elif l['weather'][0]['main']=="Cloudy" or l['weather'][0]['main']=="Smoke" or l['weather'][0]['main']=="Clouds" or l['weather'][0]['main']=="Haze":
+                        im="Cloudy.jpeg"
+                        co="white"
+                    elif l['weather'][0]['main']=="Rainy":
+                        im="Rainy.jpeg"
+                        co="white"
 
-               return render_template("currentwea.html",l=l,se=session['logo'])
+
+               return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
 
         return render_template("currentwea.html",l={'0':0},se=session['logo'])
     else:
@@ -446,12 +465,36 @@ def currentwea():
 
 @app.route("/history")
 def history():
-    # if em !="" and pa !="":
     if 'email' in session:
-        allfeed=weather.query.filter_by(Email=session['email']).all()
-        return render_template("history.html",allfeed=allfeed,se=session['logo'])
+        c = weather.query.filter_by(Email=session['email']).all()
+        last = math.ceil(len(c)/3)
+        print(last)
+        page = request.args.get('page')
+        if (not str(page).isnumeric()):
+            page = 1
+        page = int(page)
+        c = c[(page-1)*3:(page-1)*3+ 3]
+        
+        if last==1:
+            prev = "#"
+            next = "#"
+        elif page==1:
+            prev = "#"
+            next = "/history?page="+ str(page+1)
+            flash("Your are on latest history search","info")
+            
+        elif page==last:
+            prev = "/history?page="+ str(page-1)
+            next = "#"
+            flash("Your are on oldest history search","info")
+        else:
+            prev = "/history?page="+ str(page-1)
+            next = "/history?page="+ str(page+1)
+        
+        return render_template('history.html',se=session['logo'],allfeed=c, prev=prev, next=next)
     else:
         return redirect("/")
+    
 
 @app.route("/deletehistory/<int:sno>")
 def deletehistory(sno):
@@ -469,41 +512,28 @@ def deletehistory(sno):
 def forecast():
     # if em !="" and pa !="":
     if 'email' in session:
+    
         if request.method=='POST':
             c=request.form['city']
             if c=="":
                 return render_template("forecast.html",l={'0':0},se=session['logo'])
             else:
-                url="https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+                url="https://api.weatherbit.io/v2.0/forecast/daily?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2"
                 data=requests.get(url).json()
 
-                if data['cod']=='404':
-                  return render_template("forecast.html",se=session['logo'],l=data)
-                  
-                da=list()
-                t=list()
-                h=list()
-                w=list()
-                p=list()
-                we=dict()
+                d=list()
 
-                for i in range(0,len(data['list'])):
-                        da.append(data['list'][i]['dt_txt'])
-                        t.append(data['list'][i]['main']['temp']-273.15)
-                        h.append(data['list'][i]['main']['humidity'])
-                        p.append(data['list'][i]['main']['pressure'])
-                        w.append(data['list'][i]['wind']['speed'])
-                        we[da[i]]=data['list'][i]['weather'][0]
-
-                d=json.dumps(da)
-                t=json.dumps(t)
-                h=json.dumps(h)        
-                w=json.dumps(w)        
-                p=json.dumps(p)
-
+                for i in range(0,len(data['data'])):
+                        t=list()
+                        t.append(data['data'][i]['temp'])
+                        t.append(data['data'][i]['pres'])
+                        t.append(data['data'][i]['rh'])
+                        t.append(data['data'][i]['wind_spd'])
+                        t.append(data['data'][i]['valid_date'])
+                        d.append(t)
+                    
                 
-                
-                return render_template("forecast.html",se=session['logo'],l=data,d=d,t=t,h=h,w=w,p=p,we=we)
+                return render_template("forecast.html",se=session['logo'],l=data,d=d)
         return render_template("forecast.html",l={'0':0},se=session['logo'])
     else:
         return redirect("/")
@@ -561,7 +591,7 @@ def feedb():
 def queries():
     c = ContactUs.query.filter_by().all()
     last = math.ceil(len(c)/2)
-    print(last)
+    
     page = request.args.get('page')
     if (not str(page).isnumeric()):
         page = 1
