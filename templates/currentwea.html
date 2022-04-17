@@ -26,7 +26,7 @@
 
 {% if l['0'] == 0 %}
 
-    <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;">
+    <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;color:{{c}};">
         Please enter city name
     </h1>
 
@@ -37,37 +37,6 @@
 </h1>
 
 {% else %}
-
-
-<!-- <div class="blockquote justify-content-center text-center">
-
-        City: - {{l['name']}}
-        <hr class="hr"> 
-        Coordinates: -<br>
-        longitude: - {{l['coord']['lon']}}<br>
-        latitude: - {{l['coord']['lat']}}<br>
-        <hr class="hr">
-        Weather: - {{l['weather'][0]['main']}}<br> <img src=" http://openweathermap.org/img/wn/{{l['weather'][0]['icon']}}@2x.png">
-        <hr class="hr">
-        Temperature details: -<br>
-        Temperature: - {{l['main']['temp']-273.15}} C<br>
-        Feels Like: - {{l['main']['feels_like']-273.15}} C<br>
-        Min Temperature: - {{l['main']['temp_min']-273.15}} C<br>
-        MAx Temperature: - {{l['main']['temp_max']-273.15}} C
-        <hr class="hr">
-        Pressure: - {{l['main']['pressure']}}
-        <hr class="hr">
-        Humidity: - {{l['main']['humidity']}}
-        <hr class="hr">
-        Wind details: -<br>
-        Speed: - {{l['wind']['speed']}}<br>
-        Gust: - {{l['wind']['gust']}}
-        <hr class="hr">
-        Date time: - {{l['dth']}}
-        <hr class="hr">
-
-        
-    </div> -->
 
     
 <section class="vh-40" style="background-color: #f5f6f7;">

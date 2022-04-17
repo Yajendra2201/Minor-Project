@@ -6,6 +6,21 @@ import time
 import math
 from datetime import datetime
 import hashlib
+import requests
+from requests.api import head
+import csv
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import itertools
+import string
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -56,7 +71,13 @@ class feedback(db.Model):
     Email=db.Column(db.String(20), nullable=False)
     Feedb=db.Column(db.String(50), nullable=False)
     Time=db.Column(db.String(20), nullable=False)
-    
+
+class cropdetails(db.Model):
+    Sno=db.Column(db.Integer, primary_key=True)
+    Crop=db.Column(db.String(20), nullable=False)
+    Details=db.Column(db.String(500), nullable=False)
+    ImgName=db.Column(db.String(30), nullable=False)
+         
 
 @app.route("/admin/",methods=["GET","POST"])
 def adminlogin():
@@ -354,6 +375,7 @@ def logout():
     # if r=="Admin":
     #    return redirect("/admin/")
     # else:
+
     return redirect("/")
 
 @app.route("/profile")
@@ -425,7 +447,7 @@ def currentwea():
         if request.method=='POST':
             c=request.form['city']
             if c=="":
-                return render_template("currentwea.html",l={'0':0},se=session['logo'])
+                return render_template("currentwea.html",l={'0':0},se=session['logo'],c='red')
             else:
                url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
                
@@ -449,17 +471,19 @@ def currentwea():
                     elif l['weather'][0]['main']=="Sunny":
                         im="Sunny.jpeg"
                         co="black"
-                    elif l['weather'][0]['main']=="Cloudy" or l['weather'][0]['main']=="Smoke" or l['weather'][0]['main']=="Clouds" or l['weather'][0]['main']=="Haze":
+                    elif l['weather'][0]['main']=="Cloudy" or l['weather'][0]['main']=="Smoke" or l['weather'][0]['main']=="Clouds":
                         im="Cloudy.jpeg"
                         co="white"
                     elif l['weather'][0]['main']=="Rainy":
                         im="Rainy.jpeg"
                         co="white"
-
+                    else:
+                        im="General.jpeg"
+                        co="white"
 
                return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
 
-        return render_template("currentwea.html",l={'0':0},se=session['logo'])
+        return render_template("currentwea.html",l={'0':0},se=session['logo'],c='black')
     else:
         return redirect("/")
 
@@ -516,7 +540,7 @@ def forecast():
         if request.method=='POST':
             c=request.form['city']
             if c=="":
-                return render_template("forecast.html",l={'0':0},se=session['logo'])
+                return render_template("forecast.html",l={'0':0},se=session['logo'],c='red')
             else:
                 url="https://api.weatherbit.io/v2.0/forecast/daily?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2"
                 data=requests.get(url).json()
@@ -534,9 +558,79 @@ def forecast():
                     
                 
                 return render_template("forecast.html",se=session['logo'],l=data,d=d)
-        return render_template("forecast.html",l={'0':0},se=session['logo'])
+        return render_template("forecast.html",l={'0':0},se=session['logo'],c='black')
     else:
         return redirect("/")
+
+@app.route("/crop",methods=['GET','POST'])
+def crop():
+    if 'email' in session:
+        return render_template("crop.html",l={'0':0},se=session['logo'],c='black')
+    else:
+        return redirect("/")
+    
+
+
+@app.route("/cropprediction",methods=['GET','POST'])
+def cropprediction():
+    # if em !="" and pa !="":
+    if 'email' in session:
+        im=""
+        co=""
+        if request.method=='POST':
+            c=request.form['city']
+            if c=="":
+                return render_template("crop.html",l={'0':0},se=session['logo'],c='red')
+            else:
+            
+                url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+                
+                d=requests.get(url).json()
+                myjson=dict(d)
+                            
+                temperature = []
+                feelslike = []
+                temp_min = []
+                temp_max = []
+                humidity = []
+                weather = []
+                rainfall = [] 
+                for i in range(0,len(myjson['list'])):
+                    temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
+                    humidity.append(myjson['list'][i]['main']['humidity'])
+                    if "rain" not in myjson['list'][i]:
+                        rainfall.append(0)
+                    else:
+                        rainfall.append(round(myjson['list'][i]['rain']['3h']))    
+
+                temp = sum(temperature)/len(temperature) 
+                humi = sum(humidity)/len(humidity)
+                rainf = sum(rainfall)/len(rainfall)
+
+                data = pd.read_csv("Crop_recommendation.csv")
+                ord_enc = OrdinalEncoder()
+
+                data["label_code"] = ord_enc.fit_transform(data[["label"]])
+
+                features = data[['temperature','humidity','rainfall']]
+
+                label = data['label_code']
+
+                clf = KNeighborsClassifier()
+                clf.fit(features.values,label)
+
+                preds = clf.predict([[temp,humi,rainf]])
+                rev = ord_enc.inverse_transform([preds])
+                res = list(itertools.chain(*rev))
+                a = " ".join(map(str, res))
+                cro=cropdetails.query.filter_by(Crop=a).first()
+
+                return render_template("cropprediction.html",se=session['logo'],cro=cro)
+
+        return render_template("crop.html",l={'0':0},se=session['logo'])
+    else:
+        return redirect("/")
+
 
 @app.route("/AboutUs",methods=['GET','POST'])
 def about():
