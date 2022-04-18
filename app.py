@@ -624,6 +624,8 @@ def cropprediction():
                 res = list(itertools.chain(*rev))
                 a = " ".join(map(str, res))
                 cro=cropdetails.query.filter_by(Crop=a).first()
+                cro.Crop=cro.Crop[:1].upper()+cro.Crop[1:]
+                
 
                 return render_template("cropprediction.html",se=session['logo'],cro=cro)
 

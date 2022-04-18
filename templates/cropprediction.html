@@ -105,58 +105,32 @@
         <div class="owl-carousel wedo_owl_carousel">
           <div class="item">
             <div class="box">
-              <div class="img-box">
-                <img src="{{url_for('static',filename='images/wedo-img1.jpg')}}" alt="" />
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Growing Fruits and Vegetables
-                </h5>
-                <p>
-                  alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything
-                </p>
-                <a href="">
-                  Read More
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="item">
-            <div class="box ">
-              <div class="img-box">
-                <img src="{{url_for('static',filename='images/Crop Image/'+cro.ImgName)}}" alt="" />
-              </div>
-              <div class="detail-box">
-                <h5>
+
+              <div class="detail-box" style="background-color: white;padding: 3% 10%;">
+                <h3>
                   {{cro.Crop}}
-                </h5>
-                <p>
+                </h3>
+                <p style="text-align: justify;font-size: 150%;">
                   {{cro.Details}}
                 </p>
               </div>
+              
             </div>
           </div>
-          <div class="item">
+          <div class="item" style="width: 100%;">
             <div class="box ">
+
               <div class="img-box">
-                <img src="{{url_for('static',filename='images/wedo-img3.jpg')}}" alt="" />
+                <img src="{{url_for('static',filename='images/Crop Image/'+cro.ImgName)}}" alt=""/>
               </div>
-              <div class="detail-box">
-                <h5>
-                  Spring & Fall Cleanup
-                </h5>
-                <p>
-                  alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything
-                </p>
-                <a href="">
-                  Read More
-                </a>
-              </div>
+              
             </div>
           </div>
         </div>
       </div>
     </div>
+    
+    <a href="/crop" class="btn btn-light btn-outline-dark" style="margin: 2% 0% 0% 18%;">&larr; Back</a>
   </section>
 
   <!-- end we do section -->
