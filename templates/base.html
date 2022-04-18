@@ -18,7 +18,7 @@
 
   <!-- slider stylesheet -->
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/bootstrap.css')}}" />
   <!-- fonts awesome style -->
@@ -80,16 +80,17 @@
       </span>
     </a>
     <div class="user_option">
-      <form class="form-inline">
-        <button class="btn  nav_search-btn" type="submit">
-          <i class="fa fa-search" aria-hidden="true"><a href="/logout"> logout</i>
+        <form action="/logout" class="form-inline">
+          <button class="btn  nav_search-btn" type="submit">
+             
+              <i class="fa fa-sign-out" aria-hidden="true" style="font-size:20px;"></i>
+              <i class="fa fa-power-off"></i>
             
-          <i class="fa fa-search" aria-hidden="true"><a href="/profile"> Manage profile</i>
-        </button>
-      </form>
-      <a href="">
-        <i class="fa fa-user" aria-hidden="true"></i>
-      </a>
+          </button>
+        </form>
+        <a href="/profile">
+          <i class="fa fa-user" aria-hidden="true" style="font-size:20px;"></i>
+        </a>
     </div>
   </nav>
 </header>

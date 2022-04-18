@@ -16,7 +16,7 @@
 
   <!-- slider stylesheet -->
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/bootstrap.css')}}" />
   <!-- fonts awesome style -->
@@ -52,42 +52,43 @@
             </button>
           </div>
           <div class="overlay-content">
-            <a class="" href="index.html">
+            <a class="active" href="/home">
               Home
             </a>
-            <a class="active" href="service.html">
-              Services
+            <a class="" href="/currentwea">
+              Current Weather
             </a>
-            <a class="" href="why.html">
-              Why us
+            <a class="" href="/forecast">
+              Weather Forecast
             </a>
-            <a class="" href="testimonial.html">
-              Testimonial
+            <a class="" href="/crop">
+              Crop Prediction
             </a>
-            <a class="" href="blog.html">
-              Blog
+            <a class="" href="/AboutUs">
+              AboutUs
             </a>
-            <a class="" href="contact.html">
+            <a class="" href="/ContactUs">
               Contact Us
             </a>
           </div>
         </div>
-        <a class="navbar-brand" href="index.html">
+        <a class="navbar-brand" href="/home">
           <span>
-            Farmfiled
+            E-Cropter
           </span>
         </a>
         <div class="user_option">
-          <form class="form-inline">
-            <button class="btn  nav_search-btn" type="submit">
-              <i class="fa fa-search" aria-hidden="true"><a href="/logout"> logout</i>
+            <form action="/logout" class="form-inline">
+              <button class="btn  nav_search-btn" type="submit">
+                 
+                  <i class="fa fa-sign-out" aria-hidden="true" style="font-size:20px;"></i>
+                  <i class="fa fa-power-off"></i>
                 
-              <i class="fa fa-search" aria-hidden="true"><a href="/profile"> Manage profile</i>
-            </button>
-          </form>
-          <a href="">
-            <i class="fa fa-user" aria-hidden="true"></i>
-          </a>
+              </button>
+            </form>
+            <a href="/profile">
+              <i class="fa fa-user" aria-hidden="true" style="font-size:20px;"></i>
+            </a>
         </div>
       </nav>
     </header>
@@ -130,7 +131,7 @@
       </div>
     </div>
     
-    <a href="/crop" class="btn btn-light btn-outline-dark" style="margin: 2% 0% 0% 18%;">&larr; Back</a>
+    <a href="/crop" class="btn btn-light btn-outline-dark" style="margin: 2% 0% 0% 12%;">&larr; Back</a>
   </section>
 
   <!-- end we do section -->
@@ -192,22 +193,22 @@
               Links
             </h4>
             <div class="info_links">
-              <a class="" href="index.html">
+              <a class="" href="/home">
                 Home
               </a>
-              <a class="active" href="service.html">
-                Services
+              <a class="" href="/currentwea">
+                Current Weather
               </a>
-              <a class="" href="why.html">
-                Why Us
+              <a class="" href="/forecast">
+                Weather Forcest
               </a>
-              <a class="" href="testimonial.html">
-                Testimonial
+              <a class="" href="/crop">
+                Crop Prediction
               </a>
-              <a class="" href="blog.html">
-                Blog
+              <a class="" href="/AboutUs">
+                About Us
               </a>
-              <a class="" href="contact.html">
+              <a class="" href="/ContactUs">
                 Contact Us
               </a>
             </div>
