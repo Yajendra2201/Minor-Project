@@ -19,19 +19,12 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="">City Name</span>
                 </div>
-                <input type="text" class="form-control" name="city">
+                <input type="text" class="form-control" name="city" required>
               </div>
               <button type="submit" class="btn btn-outline-dark" style="margin: 1% 0% 1% 44%;">Submit</button>
         </form>
         
-        {% if l['0'] == 0 %}
         
-            <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;color:{{c}};">
-                Please enter city name
-            </h1>
-        
-        {% else %}
-      
         <!-- TODO main, description -->
         {% for T in d %}
         <section class="vh-10" style="background-color: #C1CFEA;">
@@ -82,7 +75,6 @@
         </section>
 
         {% endfor %}
-      {% endif %}
       
 
     </div>

@@ -435,44 +435,41 @@ def currentwea():
         co=""
         if request.method=='POST':
             c=request.form['city']
-            if c=="":
-                return render_template("currentwea.html",l={'0':0},se=session['logo'],c='red')
-            else:
-               url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
+            url="https://api.openweathermap.org/data/2.5/weather?appid=850789bc308ec795c19f9f4df7ed367d&q="+c
                
-               d=requests.get(url).json()
-               l=dict(d)
-               if l['cod']!='404':
-                    t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
-                    l['dth']=t
-                    l['main']['temp']=round(l['main']['temp']-273.15,2)
+            d=requests.get(url).json()
+            l=dict(d)
+            if l['cod']!='404':
+                t=time.strftime('%H:%M:%S', time.gmtime(l['dt']-l['timezone']))
+                l['dth']=t
+                l['main']['temp']=round(l['main']['temp']-273.15,2)
 
-                    we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Wind=l['wind']['speed'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-                    db.session.add(we)
-                    db.session.commit()
+                we=weather(Email=session['email'],City=l['name'],Longitude=l['coord']['lon'],Latitude=l['coord']['lon'],Weather=l['weather'][0]['main'],Temperature=(l['main']['temp']-273.15),Feels_Like=(l['main']['feels_like']-273.15),Pressure=l['main']['pressure'],Humidity=l['main']['humidity'],Wind=l['wind']['speed'],Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+                db.session.add(we)
+                db.session.commit()
                     
-                    if l['weather'][0]['main']=="Clear":
-                        im="Clear Sky.jpeg"
-                        co="black"
-                    elif l['weather'][0]['main']=="Snow" or l['weather'][0]['main']=="Winter":
-                        im="Winter.jpeg"
-                        co="black"
-                    elif l['weather'][0]['main']=="Sunny":
-                        im="Sunny.jpeg"
-                        co="black"
-                    elif l['weather'][0]['main']=="Cloudy" or l['weather'][0]['main']=="Smoke" or l['weather'][0]['main']=="Clouds":
-                        im="Cloudy.jpeg"
-                        co="white"
-                    elif l['weather'][0]['main']=="Rainy":
-                        im="Rainy.jpeg"
-                        co="white"
-                    else:
-                        im="General.jpeg"
-                        co="white"
+                if l['weather'][0]['main']=="Clear":
+                    im="Clear Sky.jpeg"
+                    co="black"
+                elif l['weather'][0]['main']=="Snow" or l['weather'][0]['main']=="Winter":
+                    im="Winter.jpeg"
+                    co="black"
+                elif l['weather'][0]['main']=="Sunny":
+                    im="Sunny.jpeg"
+                    co="black"
+                elif l['weather'][0]['main']=="Cloudy" or l['weather'][0]['main']=="Smoke" or l['weather'][0]['main']=="Clouds":
+                    im="Cloudy.jpeg"
+                    co="white"
+                elif l['weather'][0]['main']=="Rainy":
+                    im="Rainy.jpeg"
+                    co="white"
+                else:
+                    im="General.jpeg"
+                    co="white"
 
-               return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
+            return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
 
-        return render_template("currentwea.html",l={'0':0},se=session['logo'],c='black')
+        return render_template("currentwea.html",se=session['logo'],c='black')
     else:
         return redirect("/")
 
@@ -528,25 +525,23 @@ def forecast():
     
         if request.method=='POST':
             c=request.form['city']
-            if c=="":
-                return render_template("forecast.html",l={'0':0},se=session['logo'],c='red')
-            else:
-                url="https://api.weatherbit.io/v2.0/forecast/daily?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2"
-                data=requests.get(url).json()
+            
+            url="https://api.weatherbit.io/v2.0/forecast/daily?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2"
+            data=requests.get(url).json()
 
-                d=list()
+            d=list()
 
-                for i in range(0,len(data['data'])):
-                        t=list()
-                        t.append(data['data'][i]['temp'])
-                        t.append(data['data'][i]['pres'])
-                        t.append(data['data'][i]['rh'])
-                        t.append(data['data'][i]['wind_spd'])
-                        t.append(data['data'][i]['valid_date'])
-                        d.append(t)
+            for i in range(0,len(data['data'])):
+                    t=list()
+                    t.append(data['data'][i]['temp'])
+                    t.append(data['data'][i]['pres'])
+                    t.append(data['data'][i]['rh'])
+                    t.append(data['data'][i]['wind_spd'])
+                    t.append(data['data'][i]['valid_date'])
+                    d.append(t)
                     
                 
-                return render_template("forecast.html",se=session['logo'],l=data,d=d)
+            return render_template("forecast.html",se=session['logo'],l=data,d=d)
         return render_template("forecast.html",l={'0':0},se=session['logo'],c='black')
     else:
         return redirect("/")
@@ -568,55 +563,56 @@ def cropprediction():
         co=""
         if request.method=='POST':
             c=request.form['city']
-            if c=="":
-                return render_template("crop.html",l={'cod':0},se=session['logo'],c='red')
-            else:
+            n=request.form['Nitrogen']
+            p=request.form['Phosphorus']
+            k=request.form['Potassium']
+            ph=request.form['PH Level']
             
-                url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+            url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
                 
-                d=requests.get(url).json()
-                myjson=dict(d)
+            d=requests.get(url).json()
+            myjson=dict(d)
                 
-                if d['cod']=='404':
-                    return render_template("crop.html",se=session['logo'],l=d)
+            if d['cod']=='404':
+                return render_template("crop.html",se=session['logo'],l=d)
                
 
-                temperature = []
-                humidity = []
-                rainfall = [] 
-                for i in range(0,len(myjson['list'])):
-                    temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
-                    humidity.append(myjson['list'][i]['main']['humidity'])
-                    if "rain" not in myjson['list'][i]:
-                        rainfall.append(0)
-                    else:
-                        rainfall.append(round(myjson['list'][i]['rain']['3h']))    
+            temperature = []
+            humidity = []
+            rainfall = [] 
+            for i in range(0,len(myjson['list'])):
+                temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
+                humidity.append(myjson['list'][i]['main']['humidity'])
+                if "rain" not in myjson['list'][i]:
+                    rainfall.append(0)
+                else:
+                    rainfall.append(round(myjson['list'][i]['rain']['3h']))    
 
-                temp = sum(temperature)/len(temperature) 
-                humi = sum(humidity)/len(humidity)
-                rainf = sum(rainfall)/len(rainfall)
+            temp = sum(temperature)/len(temperature) 
+            humi = sum(humidity)/len(humidity)
+            rainf = sum(rainfall)/len(rainfall)
 
-                data = pd.read_csv("Crop_recommendation.csv")
-                ord_enc = OrdinalEncoder()
+            data = pd.read_csv("Crop_recommendation.csv")
+            ord_enc = OrdinalEncoder()
 
-                data["label_code"] = ord_enc.fit_transform(data[["label"]])
+            data["label_code"] = ord_enc.fit_transform(data[["label"]])
 
-                features = data[['temperature','humidity','rainfall']]
+            features = data[['temperature','humidity','rainfall']]
 
-                label = data['label_code']
+            label = data['label_code']
 
-                clf = KNeighborsClassifier()
-                clf.fit(features.values,label)
+            clf = KNeighborsClassifier()
+            clf.fit(features.values,label)
 
-                preds = clf.predict([[temp,humi,rainf]])
-                rev = ord_enc.inverse_transform([preds])
-                res = list(itertools.chain(*rev))
-                a = " ".join(map(str, res))
-                cro=cropdetails.query.filter_by(Crop=a).first()
-                cro.Crop=cro.Crop[:1].upper()+cro.Crop[1:]
+            preds = clf.predict([[temp,humi,rainf]])
+            rev = ord_enc.inverse_transform([preds])
+            res = list(itertools.chain(*rev))
+            a = " ".join(map(str, res))
+            cro=cropdetails.query.filter_by(Crop=a).first()
+            cro.Crop=cro.Crop[:1].upper()+cro.Crop[1:]
                 
 
-                return render_template("cropprediction.html",se=session['logo'],cro=cro)
+            return render_template("cropprediction.html",se=session['logo'],cro=cro)
 
         return render_template("crop.html",l={'0':0},se=session['logo'])
     else:
@@ -629,15 +625,12 @@ def about():
     if 'email' in session:
         if request.method=='POST':
             f=request.form['feedback']
-            if f=="":
-                flash("Please enter your feedback","warning")
-                return redirect("/AboutUs")
-            else:
-                feedb=feedback(Email=session['email'],Feedb=f,Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-                db.session.add(feedb)
-                db.session.commit()
-                flash("Your feedback is successfully send ","success")
-                return redirect("/AboutUs")
+            
+            feedb=feedback(Email=session['email'],Feedb=f,Time=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            db.session.add(feedb)
+            db.session.commit()
+            flash("Your feedback is successfully send ","success")
+            return redirect("/AboutUs")
 
         return render_template("about.html",se=session['logo'])
     else:
@@ -712,15 +705,12 @@ def contact():
             phone=request.form['phone']
             email=request.form['email']
             msg=request.form['feedb']
-            if msg=="":
-                flash("Please enter your","warning")
-                redirect("/ContactUs")
-            else:
-                con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg,response='Null')
-                db.session.add(con)
-                db.session.commit()
-                flash("Your Message is send successfully","success")
-                return redirect("/ContactUs")
+            
+            con=ContactUs(fname=fname,lname=lname,gender=gender,phone=phone,email=email,msg=msg,response='Null')
+            db.session.add(con)
+            db.session.commit()
+            flash("Your Message is send successfully","success")
+            return redirect("/ContactUs")
         
         lo=registration.query.filter_by(email=session['email']).first()
         return render_template("contact.html",lo=lo,se=session['logo'])
