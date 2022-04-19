@@ -469,7 +469,7 @@ def currentwea():
 
             return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
 
-        return render_template("currentwea.html",se=session['logo'],c='black')
+        return render_template("currentwea.html",l={'0':0},se=session['logo'],c='black')
     else:
         return redirect("/")
 
