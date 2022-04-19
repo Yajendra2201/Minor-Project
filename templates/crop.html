@@ -21,10 +21,14 @@
     
       <button type="submit" class="btn btn-outline-dark" style="margin: 1% 0% 1% 44%;">Submit</button><br>
 
-      {% if l['0']==0 %}
+      {% if l['cod']==0 %}
       <h1 class="blockquote text-center" style="padding: 0% 0% 2% 0%;color:{{c}};">
         Please enter city name
     </h1>
+    {% elif l['cod']=='404'%}
+    <h1 class="blockquote text-center" style="padding: 0% 5% 2% 0%;color:red;">
+      {{l['message']}}
+  </h1>
 
       {% endif %}
   

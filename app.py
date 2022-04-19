@@ -7,20 +7,11 @@ import math
 from datetime import datetime
 import hashlib
 import requests
-from requests.api import head
-import csv
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import itertools
-import string
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sqlalchemy import null, true
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -303,35 +294,24 @@ def login():
             return redirect("/")
         
         p = hashlib.md5(password.encode())
-        lo=registration.query.all()
-        e=0
-        s=0
-        for i in lo:
-            if email==i.email:
-                e=1
-                if i.status=="Blocked":
-                    s=1
-                    break
-                if p.hexdigest()==i.password:
-                # em=i.email
-                # pa=i.password
-                  session['email']=email
-                  session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
-                  session['role']=i.role
-                  break
-        # if em=="" and pa="":
-        if 'email' in session:
-            return redirect("/home")
-        else:
-            if e==1:  
-              if s==1:
-                  flash(i.email+" is blocked by our admin!!","warning")
-              else:
-                   flash("Invalid Email or Password","warning")
-            else:
-              flash("You may have not signed up!!","warning")
-            return redirect("/")
 
+        lo=registration.query.filter_by(email=email).first()
+
+        if lo is None:
+            flash("You may have not signed up!!")
+            return redirect("/")
+        elif lo.status=="Blocked":
+                flash(lo.email+" is blocked by our admin!!")
+                return redirect("/")
+        elif lo.password!=p.hexdigest():
+            flash("Invalid Password entered")
+            return redirect("/")
+        else:
+            session['email']=lo.email
+            session['logo']=(lo.fname[0:1]+lo.lname[0:1]).upper()
+            session['role']=lo.role
+            return redirect("/home")
+            
     return render_template("login.html")
 
 @app.route("/signup",methods=["GET","POST"])
@@ -349,9 +329,18 @@ def signup():
         phone=request.form['phone']
         email=request.form['email']
         password=request.form['password']
+        conpassword=request.form['conpassword']
+
+        c=registration.query.filter_by(email=email).first()
+        if c is not None:
+            flash("Email allready register")
+            return redirect("/signup")
         
-        if fname=="" or lname=="" or len(phone)!=10 or email=="" or password=="":
-            flash("Please fill all the feilds and phone number should be of 10 digits","warning")
+        elif password!=conpassword:
+            flash("New and Confirm password are not matched")
+            return redirect("/signup")
+        elif len(phone)!=10:
+            flash("Invalid phone number")
             return redirect("/signup")
         else:
             p = hashlib.md5(password.encode())
@@ -431,7 +420,7 @@ def profileupdate():
         redirect("/")
 
 @app.route("/home")
-def hello_world():
+def home():
     # if em !="" and pa !="":
     if 'email' in session:
         return render_template("home.html",se=session['logo'])
@@ -565,7 +554,7 @@ def forecast():
 @app.route("/crop",methods=['GET','POST'])
 def crop():
     if 'email' in session:
-        return render_template("crop.html",l={'0':0},se=session['logo'],c='black')
+        return render_template("crop.html",l={'cod':0},se=session['logo'],c='black')
     else:
         return redirect("/")
     
@@ -580,20 +569,20 @@ def cropprediction():
         if request.method=='POST':
             c=request.form['city']
             if c=="":
-                return render_template("crop.html",l={'0':0},se=session['logo'],c='red')
+                return render_template("crop.html",l={'cod':0},se=session['logo'],c='red')
             else:
             
                 url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
                 
                 d=requests.get(url).json()
                 myjson=dict(d)
-                            
+                
+                if d['cod']=='404':
+                    return render_template("crop.html",se=session['logo'],l=d)
+               
+
                 temperature = []
-                feelslike = []
-                temp_min = []
-                temp_max = []
                 humidity = []
-                weather = []
                 rainfall = [] 
                 for i in range(0,len(myjson['list'])):
                     temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
