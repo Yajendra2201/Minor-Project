@@ -1356,4 +1356,11 @@ a:focus {
 .footer_section p a {
   color: inherit;
 }
+
+.goog-te-combo{
+  width: 190px;
+  height: 38px;
+  border-radius: 18%;
+  padding: 0% 16%;
+}
 /*# sourceMappingURL=style.css.map */
