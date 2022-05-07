@@ -333,7 +333,7 @@ def signup():
 
         c=registration.query.filter_by(email=email).first()
         if c is not None:
-            flash("Email allready register")
+            flash("Email already register")
             return redirect("/signup")
         
         elif password!=conpassword:

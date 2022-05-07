@@ -63,7 +63,7 @@
           
             <div class="alert alert-{{cato}} alert-dismissible d-flex align-items-center justify-content-between" role="alert">
               
-              <button type="button" class="custombt" data-bs-dismiss="alert" aria-label="Close">{{message}}</button>
+              <button type="button" class="custombt" data-bs-dismiss="alert" aria-label="Close" style="color: red;background-color: transparent;">{{message}}</button>
             </div>
           
             {% endfor %}  
@@ -73,13 +73,6 @@
           <input type="submit" value="Register">
         </div>
         
-      <div id="ad"></div>
-      <script src="http://translate.google.com/translate_a/element.js?cb=loadfun"></script>
-      <script>
-          function loadfun(){
-              new google.translate.TranslateElement("ad");
-          }
-      </script>
       </form>
     </div>
   </div>
