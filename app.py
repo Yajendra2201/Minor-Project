@@ -69,6 +69,19 @@ class cropdetails(db.Model):
     Details=db.Column(db.String(500), nullable=False)
     ImgName=db.Column(db.String(30), nullable=False)
          
+class graphd(db.Model):
+    Sno=db.Column(db.Integer, primary_key=True)
+    Crop=db.Column(db.String(20), nullable=False)
+    p2006_7=db.Column(db.String(10), nullable=False)
+    p2007_8=db.Column(db.String(10), nullable=False)
+    p2008_9=db.Column(db.String(10), nullable=False)
+    p2009_10=db.Column(db.String(10), nullable=False)
+    p2010_11=db.Column(db.String(10), nullable=False)
+    y2006_7=db.Column(db.String(10), nullable=False)
+    y2007_8=db.Column(db.String(10), nullable=False)
+    y2008_9=db.Column(db.String(10), nullable=False)
+    y2009_10=db.Column(db.String(10), nullable=False)
+    y2010_11=db.Column(db.String(10), nullable=False)
 
 @app.route("/admin/",methods=["GET","POST"])
 def adminlogin():
@@ -354,16 +367,9 @@ def signup():
 
 @app.route("/logout")
 def logout():
-    # global em,pa
-    # em=""
-    # pa=""
-    # r=session['role']
     session.pop('email')
     session.pop('logo')
     session.pop('role')
-    # if r=="Admin":
-    #    return redirect("/admin/")
-    # else:
 
     return redirect("/")
 
@@ -552,8 +558,6 @@ def crop():
         return render_template("crop.html",l={'cod':0},se=session['logo'],c='black')
     else:
         return redirect("/")
-    
-
 
 @app.route("/cropprediction",methods=['GET','POST'])
 def cropprediction():
@@ -610,6 +614,10 @@ def cropprediction():
             a = " ".join(map(str, res))
             cro=cropdetails.query.filter_by(Crop=a).first()
             cro.Crop=cro.Crop[:1].upper()+cro.Crop[1:]
+            x=list()
+            y=list()
+            gr=graphd.query.filter_by(Crop='Rice').first()
+            
                 
 
             return render_template("cropprediction.html",se=session['logo'],cro=cro)
@@ -717,6 +725,8 @@ def contact():
  
     else:
         return redirect("/")
+
+
 
 # contactus curd operations
 
