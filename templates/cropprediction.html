@@ -14,6 +14,8 @@
 
   <title>Crop Predicted</title>
 
+  <link rel="icon" href="{{url_for('static',filename='images/leaf.png')}}" type="image/png">
+
   <!-- slider stylesheet -->
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -29,6 +31,9 @@
   <link href="{{url_for('static',filename='css/style.css')}}" rel="stylesheet" />
   <!-- responsive style -->
   <link href="{{url_for('static',filename='css/responsive.css')}}" rel="stylesheet" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+
 </head>
 
 <body class="sub_page">
@@ -123,6 +128,17 @@
       </div>
       <div class="carousel-wrap ">
         <div class="owl-carousel wedo_owl_carousel">
+
+          <div class="item" style="width: 100%;">
+            <div class="box ">
+
+              <div class="img-box">
+                <img src="{{url_for('static',filename='images/Crop Image/'+cro.ImgName)}}" alt=""/>
+              </div>
+              
+            </div>
+          </div>
+
           <div class="item">
             <div class="box">
 
@@ -137,19 +153,87 @@
               
             </div>
           </div>
+         
           <div class="item" style="width: 100%;">
             <div class="box ">
 
-              <div class="img-box">
-                <img src="{{url_for('static',filename='images/Crop Image/'+cro.ImgName)}}" alt=""/>
+              <div class="detail-box" style="background-color: white;">
+
+                <canvas id="production" width="1000" height="400" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+
               </div>
               
             </div>
           </div>
+        
+          <div class="item" style="width: 100%;">
+            <div class="box ">
+
+              <div class="detail-box" style="background-color: white;">
+
+                <canvas id="profit" width="1000" height="500" style="margin-top: 5%; margin-left: auto; margin-right: auto;"></canvas>
+
+
+              </div>
+              
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
     
+    <script>
+      let ye=JSON.parse({{ ye | tojson}})
+      let py=JSON.parse({{ py | tojson}})
+      let yy=JSON.parse({{ yy | tojson}})
+      
+      var tem=document.getElementById("production").getContext("2d");
+      var temperature= new Chart(tem,{
+        type: "line",
+        data: {
+          labels: ye,
+          datasets: [
+            {
+              label: "Crop Production Per Year",
+              data: py,
+              fill: true,
+              borderColor: "rgb(204, 0, 0)",
+              lineTension: 0.5     
+          }
+          ]
+        },
+        options:{
+          responsive: false
+          
+        }
+      });
+    
+      var win=document.getElementById("profit").getContext("2d");
+      var wind= new Chart(win,{
+        type: "line",
+        data: {
+          labels: ye,
+          datasets: [
+            {
+              label: "Crop Profit Per Year",
+              data: yy,
+              fill: true,
+              borderColor: "rgb(75,192,192)",
+              lineTension: 0.5
+            
+          }
+          ]
+        },
+        options:{
+          responsive: false
+        }
+      });
+    
+    </script> 
+    
+
     <a href="/crop" class="btn btn-light btn-outline-dark" style="margin: 2% 0% 0% 8%;">&larr; Back</a>
   </section>
 

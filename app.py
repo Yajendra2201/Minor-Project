@@ -11,6 +11,7 @@ import pandas as pd
 import itertools
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
 from sqlalchemy import null, true
 
 app = Flask(__name__)
@@ -572,6 +573,22 @@ def cropprediction():
             k=request.form['Potassium']
             ph=request.form['PH Level']
             
+            a=dict()
+            a['cod']=0
+            
+            if 0>float(n) or float(n)>150:
+                flash("Value of Nitrogen must be in between 0 to 150 !!","warning")
+                return render_template("crop.html",se=session['logo'],l=a)
+            elif 5>float(p) or float(p)>250:
+                flash("Value of Phosphorus must be in between 5 to 250 !!","warning")
+                return render_template("crop.html",se=session['logo'],l=a)
+            elif 5>float(k) or float(k)>220:
+                flash("Value of Potassium must be in between 5 to 220 !!","warning")
+                return render_template("crop.html",se=session['logo'],l=a)
+            elif 0>float(ph) or float(ph)>14:
+                flash("Value of PH must be in between 0 to 14 !!","warning")
+                return render_template("crop.html",se=session['logo'],l=a)
+
             url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
                 
             d=requests.get(url).json()
@@ -595,32 +612,65 @@ def cropprediction():
             temp = sum(temperature)/len(temperature) 
             humi = sum(humidity)/len(humidity)
             rainf = sum(rainfall)/len(rainfall)
-
             data = pd.read_csv("Crop_recommendation.csv")
             ord_enc = OrdinalEncoder()
-
             data["label_code"] = ord_enc.fit_transform(data[["label"]])
-
-            features = data[['temperature','humidity','rainfall']]
-
             label = data['label_code']
+            data.drop(data.columns[7],axis=1,inplace = True)
+            data1 = data.values
 
-            clf = KNeighborsClassifier()
-            clf.fit(features.values,label)
+            X,y = data1[:, :-1], label
+            X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.33,random_state=1)
+            # print(X_train.shape, X_train.shape, y_train.shape, y_test.shape)
+            model  = KNeighborsClassifier()
 
-            preds = clf.predict([[temp,humi,rainf]])
+            model.fit(X_train, y_train)
+
+            preds = model.predict([[n,p,k,temp,humi,ph,rainf]])
+
+            print(*preds)
             rev = ord_enc.inverse_transform([preds])
+            print(*rev)
+
             res = list(itertools.chain(*rev))
             a = " ".join(map(str, res))
+
+
             cro=cropdetails.query.filter_by(Crop=a).first()
             cro.Crop=cro.Crop[:1].upper()+cro.Crop[1:]
-            x=list()
-            y=list()
+            
+            ye=list()
+            py=list()
+            yy=list()
+            
             gr=graphd.query.filter_by(Crop='Rice').first()
             
-                
+            for i in range(6,11):
+                if i<9:
+                  s='200'+str(i)+'-0'+str((i+1))
+                elif i==9:
+                  s='200'+str(i)+'-'+str((i+1))
+                else:
+                  s='20'+str(i)+'-'+str((i+1))
+                ye.append(s)
 
-            return render_template("cropprediction.html",se=session['logo'],cro=cro)
+            py.append(gr.p2006_7)
+            py.append(gr.p2007_8)
+            py.append(gr.p2008_9)
+            py.append(gr.p2009_10)
+            py.append(gr.p2010_11)
+
+            yy.append(gr.y2006_7)
+            yy.append(gr.y2007_8)
+            yy.append(gr.y2008_9)
+            yy.append(gr.y2009_10)
+            yy.append(gr.y2010_11)
+
+            ye=json.dumps(ye)
+            py=json.dumps(py)
+            yy=json.dumps(yy)
+
+            return render_template("cropprediction.html",se=session['logo'],cro=cro,py=py,yy=yy,ye=ye)
 
         return render_template("crop.html",l={'0':0},se=session['logo'])
     else:
