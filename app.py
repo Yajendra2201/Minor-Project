@@ -12,7 +12,7 @@ import itertools
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sqlalchemy import null, true
+import csv
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -589,25 +589,36 @@ def cropprediction():
                 flash("Value of PH must be in between 0 to 14 !!","warning")
                 return render_template("crop.html",se=session['logo'],l=a)
 
-            url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
-                
+            #url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
+            url="https://api.weatherbit.io/v2.0/forecast/hourly?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2&hours=240"    
+
             d=requests.get(url).json()
             myjson=dict(d)
                 
-            if d['cod']=='404':
-                return render_template("crop.html",se=session['logo'],l=d)
+            # if d['cod']=='404':
+            #     return render_template("crop.html",se=session['logo'],l=d)
                
 
             temperature = []
             humidity = []
             rainfall = [] 
-            for i in range(0,len(myjson['list'])):
-                temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
-                humidity.append(myjson['list'][i]['main']['humidity'])
-                if "rain" not in myjson['list'][i]:
+
+            # for i in range(0,len(myjson['list'])):
+            #     temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
+            #     humidity.append(myjson['list'][i]['main']['humidity'])
+            #     if "rain" not in myjson['list'][i]:
+            #         rainfall.append(0)
+            #     else:
+            #         rainfall.append(round(myjson['list'][i]['rain']['3h']))    
+
+
+            for i in range(0,len(myjson['data'])):
+                temperature.append(round(myjson['data'][i]['temp']))
+                humidity.append(myjson['data'][i]['rh'])
+                if "precip" not in myjson['data'][i]:
                     rainfall.append(0)
                 else:
-                    rainfall.append(round(myjson['list'][i]['rain']['3h']))    
+                    rainfall.append(round(myjson['data'][i]['precip'])) 
 
             temp = sum(temperature)/len(temperature) 
             humi = sum(humidity)/len(humidity)
@@ -643,7 +654,9 @@ def cropprediction():
             py=list()
             yy=list()
             
-            gr=graphd.query.filter_by(Crop='Rice').first()
+            gr=graphd.query.filter_by(Crop=a).first()
+            if gr is None:
+               gr=graphd.query.filter_by(Crop='Other Pulses').first()
             
             for i in range(6,11):
                 if i<9:
