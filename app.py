@@ -388,7 +388,7 @@ def cropprediction():
 
             temp = sum(temperature)/len(temperature) 
             humi = sum(humidity)/len(humidity)
-            rainf = sum(rainfall)/len(rainfall)
+            rainf = sum(rainfall)
             data = pd.read_csv("Crop_recommendation.csv")
             ord_enc = OrdinalEncoder()
             data["label_code"] = ord_enc.fit_transform(data[["label"]])
