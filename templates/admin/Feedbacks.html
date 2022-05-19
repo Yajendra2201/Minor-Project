@@ -1,0 +1,73 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Your Weather check History{% endblock title %}
+
+{% block body %}
+
+    <!-- slider section -->
+    
+    
+    <section class="slider_section position-relative">
+      <a class="navbar-brand" href="/admin/home">
+        <span>
+          E-Cropter
+        </span>
+      </a>
+      
+      <div class="box">
+        <div id="customCarousel1" class="carousel slide" data-ride="carousel">
+        
+          
+  
+     
+    </section>
+    <!-- end slider section -->
+  </div>
+
+  <!-- we do section -->
+
+<section class="wedo_section layout_padding section_pr">
+    <div class="container">
+      <div class="heading_container">
+        <h2><span>My</span> Feedbacks</h2>
+      </div>
+      <div class="carousel-wrap ">
+        
+          {% if f|length==0 %}
+ <div class="alert alert-info text-center" role="alert">
+    No Feedbacks Availabe!!!
+  </div>
+ {% else %}
+ <table class="table table-hover my-4 text-center">
+    <thead> 
+      <tr>
+        <th scope="col"  style="width:10%">S No</th>
+        <th scope="col">Feedbacks</th>
+        <th scope="col">Time</th>
+        <th scope="col">Delete Feedback</th>
+      </tr>
+    </thead>
+    <tbody>
+ {% for rows in f %}
+ <tr>
+ <th scope="row">{{loop.index}}</th>
+ <td>{{rows.Feedb}}</td>
+ <td>{{rows.Time}}</td>
+
+ <td>
+  <a href="/admin/delete/{{rows.Email}}/{{rows.sno}} " type="button" class="btn btn-outline-dark btn-sm">Delete</a>
+ </td>
+
+ </tr>
+ {% endfor %}
+ {% endif %}
+ </tbody>
+ </table>
+
+        
+  </div>
+</section>
+
+  <!-- end we do section -->
+
+  {% endblock body %}

@@ -82,6 +82,165 @@ class graphd(db.Model):
     y2009_10=db.Column(db.String(10), nullable=False)
     y2010_11=db.Column(db.String(10), nullable=False)
 
+<<<<<<< HEAD
+=======
+@app.route("/admin/",methods=["GET","POST"])
+def adminlogin():
+    # global em,pa
+    if 'un' in session:
+        flash("You are already login","success")
+        return render_template('admin/home.html')
+
+    if request.method=="POST":
+        username=request.form['email']
+        password=request.form['password']
+        
+        if username=="" or password=="":
+            flash("Please Enter Email or Password","warning")
+            return redirect("/admin/")
+        
+        if username=='Admin' and password=='Admin':
+            session['un']='Admin'
+            return redirect("/admin/home")
+        else:
+            return redirect("/admin/")
+
+    return render_template("admin/login.html")
+
+
+@app.route("/admin/home")
+def adminhome():
+    if 'un' in session:
+        return render_template("/admin/home.html")
+    else:
+        return redirect("/admin/")
+
+@app.route("/admin/users")
+def users():
+    if 'un' in session:
+        allfeed=registration.query.filter_by(role='User').all()
+        return render_template("admin/Users.html",allfeed=allfeed)
+    else:
+        return redirect("/admin/")
+
+@app.route("/admin/status/<string:email>")
+def status(email):
+    if 'un' in session:
+        s=registration.query.filter_by(email=email).first()
+        if s.status=="Unblocked":
+            s.status="Blocked"
+        else:
+            s.status="Unblocked"
+        a=s.status
+        db.session.add(s)
+        db.session.commit()
+        flash(email+" is "+a+" successfully","success")
+        return redirect("/admin/users")
+
+@app.route("/admin/profile/<string:email>")
+def pro(email):
+    if 'un' in session:
+        r=registration.query.filter_by(email=email).first()
+        f=feedback.query.filter_by(Email=email).all()
+        c=ContactUs.query.filter_by(email=email).all()
+        w=weather.query.filter_by(Email=email).all()
+        return render_template("admin/UserProfile.html",r=r,f=f,c=c,w=w)
+
+@app.route("/admin/Feedbacks")
+def feed():
+    if 'un' in session:
+        f=feedback.query.all()
+        return render_template("/admin/feedbacks.html",f=f)
+    else:
+        return redirect("/admin")
+
+@app.route("/admin/Queries")
+def quer():
+    if 'un' in session:
+        c=ContactUs.query.all()
+        return render_template("admin/queries.html",c=c)
+    else:
+        return redirect("/admin")
+
+@app.route("/admin/delete/<string:email>/<int:sno>")
+def delete(email,sno):
+    # if em !="" and pa !="":   
+    if 'un' in session:
+        f=feedback.query.filter_by(Email=email,sno=sno).first()
+        db.session.delete(f)
+        db.session.commit()
+        flash(email+" feedback is successfully deleted","success")
+        return redirect('/admin/users')
+    else:
+        return redirect("/admin")
+
+@app.route("/admin/response/<string:email>/<int:sno>",methods=['GET','POST'])
+def resp(email,sno):
+    # if em !="" and pa !="":   
+    if 'un' in session:
+        if request.method=='POST':
+            r=request.form['response']
+            c=ContactUs.query.filter_by(email=email,sno=sno).first()
+            c.response=r
+            db.session.add(c)
+            db.session.commit()
+            flash(email+" response send is successfully","success")
+        return redirect('/admin/users')
+    else:
+        return redirect("/admin")
+
+
+@app.route("/admin/profile")
+def adprofile():
+    if 'email' in session and session['role']=="Admin":
+        lo=registration.query.filter_by(email=session['email']).first()
+        return render_template("/admin/myprofile.html",lo=lo)
+    else:
+        return redirect("/admin/")
+
+@app.route("/admin/profileupdate",methods=["GET","POST"])
+def adprofileupdate():
+    if 'email' in session and session['role']=="Admin":
+        if request.method=='POST':
+            fname=request.form['fname']
+            lname=request.form['lname']
+            gender=request.form['gender']
+            phone=request.form['phone']
+            cpass=request.form['cpassword']
+            npass=request.form['npassword']
+            copass=request.form['copassword']
+
+            re=registration.query.filter_by(email=session['email']).first()
+            
+            if cpass!="":
+                c=hashlib.md5(cpass.encode())
+                if c.hexdigest()!=re.password:
+                    flash("Invalid Current Password","warning")
+                    return redirect("/admin/profile")
+                else:
+                    if npass=="":
+                        flash("New password is empty string","warning")
+                        return redirect("/admin/profile")
+                    
+                    elif npass!=copass:
+                        flash("New and Confirm password does not matched","warning")
+                        return redirect("/admin/profile")
+                    n=hashlib.md5(npass.encode())
+                    re.password=n.hexdigest()            
+            re.fname=fname
+            re.lname=lname
+            re.gender=gender
+            re.phone=phone
+
+            db.session.add(re)
+            db.session.commit()
+            flash("Your profile is successfully updated","success")
+
+            return redirect('/admin/profile')
+
+    else:
+        redirect("/admin/")
+>>>>>>> admin
 
 @app.route("/",methods=["GET","POST"])
 def login():
@@ -112,6 +271,10 @@ def login():
             return redirect("/")
         else:
             session['email']=lo.email
+<<<<<<< HEAD
+=======
+            session['role']=lo.role
+>>>>>>> admin
             return redirect("/home")
             
     return render_template("index.html")
@@ -156,9 +319,18 @@ def signup():
 
 @app.route("/logout")
 def logout():
+<<<<<<< HEAD
     session.pop('email')
 
     return redirect("/")
+=======
+    if 'email' in session:
+      session.pop('email')
+      return redirect("/")
+    elif 'un' in session:
+        session.pop('un')
+        return redirect("/admin")
+>>>>>>> admin
 
 @app.route("/profile")
 def profile():
