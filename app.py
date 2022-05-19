@@ -12,7 +12,7 @@ import itertools
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sqlalchemy import null, true
+import csv
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
@@ -20,6 +20,8 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///feedback.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 db=SQLAlchemy(app)
 
+# em=""
+# pa=""
 
 class ContactUs(db.Model):
     sno=db.Column(db.Integer, primary_key=True)
@@ -82,8 +84,6 @@ class graphd(db.Model):
     y2009_10=db.Column(db.String(10), nullable=False)
     y2010_11=db.Column(db.String(10), nullable=False)
 
-<<<<<<< HEAD
-=======
 @app.route("/admin/",methods=["GET","POST"])
 def adminlogin():
     # global em,pa
@@ -190,60 +190,9 @@ def resp(email,sno):
         return redirect("/admin")
 
 
-@app.route("/admin/profile")
-def adprofile():
-    if 'email' in session and session['role']=="Admin":
-        lo=registration.query.filter_by(email=session['email']).first()
-        return render_template("/admin/myprofile.html",lo=lo)
-    else:
-        return redirect("/admin/")
-
-@app.route("/admin/profileupdate",methods=["GET","POST"])
-def adprofileupdate():
-    if 'email' in session and session['role']=="Admin":
-        if request.method=='POST':
-            fname=request.form['fname']
-            lname=request.form['lname']
-            gender=request.form['gender']
-            phone=request.form['phone']
-            cpass=request.form['cpassword']
-            npass=request.form['npassword']
-            copass=request.form['copassword']
-
-            re=registration.query.filter_by(email=session['email']).first()
-            
-            if cpass!="":
-                c=hashlib.md5(cpass.encode())
-                if c.hexdigest()!=re.password:
-                    flash("Invalid Current Password","warning")
-                    return redirect("/admin/profile")
-                else:
-                    if npass=="":
-                        flash("New password is empty string","warning")
-                        return redirect("/admin/profile")
-                    
-                    elif npass!=copass:
-                        flash("New and Confirm password does not matched","warning")
-                        return redirect("/admin/profile")
-                    n=hashlib.md5(npass.encode())
-                    re.password=n.hexdigest()            
-            re.fname=fname
-            re.lname=lname
-            re.gender=gender
-            re.phone=phone
-
-            db.session.add(re)
-            db.session.commit()
-            flash("Your profile is successfully updated","success")
-
-            return redirect('/admin/profile')
-
-    else:
-        redirect("/admin/")
->>>>>>> admin
-
 @app.route("/",methods=["GET","POST"])
 def login():
+    # global em,pa
     if 'email' in session:
         flash("You are already login","success")
         return render_template('home.html')
@@ -271,13 +220,10 @@ def login():
             return redirect("/")
         else:
             session['email']=lo.email
-<<<<<<< HEAD
-=======
             session['role']=lo.role
->>>>>>> admin
             return redirect("/home")
             
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route("/signup",methods=["GET","POST"])
 def signup():
@@ -319,18 +265,12 @@ def signup():
 
 @app.route("/logout")
 def logout():
-<<<<<<< HEAD
-    session.pop('email')
-
-    return redirect("/")
-=======
     if 'email' in session:
       session.pop('email')
       return redirect("/")
     elif 'un' in session:
         session.pop('un')
         return redirect("/admin")
->>>>>>> admin
 
 @app.route("/profile")
 def profile():
@@ -385,6 +325,7 @@ def profileupdate():
 
 @app.route("/home")
 def home():
+    # if em !="" and pa !="":
     if 'email' in session:
         return render_template("home.html")
     else:
@@ -392,6 +333,7 @@ def home():
 
 @app.route("/currentwea",methods=['GET','POST'])
 def currentwea():
+    # if em !="" and pa !="":
     if 'email' in session:
         im=""
         co=""
@@ -470,6 +412,7 @@ def history():
 
 @app.route("/deletehistory/<int:sno>")
 def deletehistory(sno):
+    # if em !="" and pa !="":   
     if 'email' in session:
         feed=weather.query.filter_by(Email=session['email'],sno=sno).first()
         db.session.delete(feed)
@@ -481,6 +424,7 @@ def deletehistory(sno):
 
 @app.route("/forecast",methods=['GET','POST'])
 def forecast():
+    # if em !="" and pa !="":
     if 'email' in session:
     
         if request.method=='POST':
@@ -515,6 +459,7 @@ def crop():
 
 @app.route("/cropprediction",methods=['GET','POST'])
 def cropprediction():
+    # if em !="" and pa !="":
     if 'email' in session:
         im=""
         co=""
@@ -541,14 +486,28 @@ def cropprediction():
                 flash("Value of PH must be in between 0 to 14 !!","warning")
                 return render_template("crop.html",l=a)
 
+            #url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
             url="https://api.weatherbit.io/v2.0/forecast/hourly?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2&hours=240"    
 
             d=requests.get(url).json()
             myjson=dict(d)
                 
+            # if d['cod']=='404':
+            #     return render_template("crop.html",se=session['logo'],l=d)
+               
+
             temperature = []
             humidity = []
             rainfall = [] 
+
+            # for i in range(0,len(myjson['list'])):
+            #     temperature.append(round(myjson['list'][i]['main']['temp']-273.2))
+            #     humidity.append(myjson['list'][i]['main']['humidity'])
+            #     if "rain" not in myjson['list'][i]:
+            #         rainfall.append(0)
+            #     else:
+            #         rainfall.append(round(myjson['list'][i]['rain']['3h']))    
+
 
             for i in range(0,len(myjson['data'])):
                 temperature.append(round(myjson['data'][i]['temp']))
@@ -560,7 +519,7 @@ def cropprediction():
 
             temp = sum(temperature)/len(temperature) 
             humi = sum(humidity)/len(humidity)
-            rainf = sum(rainfall)
+            rainf = sum(rainfall)/len(rainfall)
             data = pd.read_csv("Crop_recommendation.csv")
             ord_enc = OrdinalEncoder()
             data["label_code"] = ord_enc.fit_transform(data[["label"]])
@@ -570,6 +529,7 @@ def cropprediction():
 
             X,y = data1[:, :-1], label
             X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.33,random_state=1)
+            # print(X_train.shape, X_train.shape, y_train.shape, y_test.shape)
             model  = KNeighborsClassifier()
 
             model.fit(X_train, y_train)
@@ -593,7 +553,7 @@ def cropprediction():
             
             gr=graphd.query.filter_by(Crop=a).first()
             if gr is None:
-                gr=graphd.query.filter_by(Crop='Other Pulses').first()
+               gr=graphd.query.filter_by(Crop='Other Pulses').first()
             
             for i in range(6,11):
                 if i<9:
@@ -629,6 +589,7 @@ def cropprediction():
 
 @app.route("/AboutUs",methods=['GET','POST'])
 def about():
+    # if em !="" and pa !="":
     if 'email' in session:
         if request.method=='POST':
             f=request.form['feedback']
@@ -703,6 +664,7 @@ def queries():
 
 @app.route("/ContactUs",methods=["GET","POST"])
 def contact():
+    # if em !="" and pa !=""4
     if 'email' in session:
         if request.method=="POST":
             fname=request.form['fname']
@@ -724,5 +686,44 @@ def contact():
     else:
         return redirect("/")
 
+
+
+# contactus curd operations
+
+    
+# @app.route("/update/<int:sno>",methods=['GET','POST'])
+# def update(sno):
+#     # if em !="" and pa !="":    
+#     if 'email' in session:
+#         if request.method=='POST':
+#             fname=request.form['fname']
+#             lname=request.form['lname']
+#             gender=request.form['gender']
+#             phone=request.form['phone']
+#             email=request.form['email']
+#             feedb=request.form['feedb']
+#             if fname=="" or lname=="" or len(phone)!=10 or email=="" or feedb=="":
+#                 flash("Please fill all the feilds and phone number should be of 10 digits","warning")
+#                 redirect("/update/sno")
+#             else:
+#                 con=ContactUs.query.filter_by(sno=sno).first()
+#                 con.fname=fname
+#                 con.lname=lname
+#                 con.gender=gender
+#                 con.phone=phone
+#                 con.email=email
+#                 con.feedb=feedb
+
+#                 db.session.add(con)
+#                 db.session.commit()
+#                 flash("Your feedback is successfully updated","success")
+
+#                 return redirect('/history')
+
+#         con=ContactUs.query.filter_by(sno=sno).first()
+#         return render_template('update.html',feed=con,se=session['logo'])
+#     else:
+#         return redirect("/")
+
 if __name__=="__main__":
-    app.run(debug=False,port=8000)
+    app.run(debug=True,port=8000)
