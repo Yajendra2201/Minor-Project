@@ -87,95 +87,45 @@ class graphd(db.Model):
 @app.route("/admin/",methods=["GET","POST"])
 def adminlogin():
     # global em,pa
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         flash("You are already login","success")
-        return render_template('admin/home.html',se=session['logo'])
+        return render_template('admin/home.html')
 
     if request.method=="POST":
-        email=request.form['email']
+        username=request.form['email']
         password=request.form['password']
         
-        if email=="" or password=="":
+        if username=="" or password=="":
             flash("Please Enter Email or Password","warning")
             return redirect("/admin/")
         
-        p = hashlib.md5(password.encode())
-        lo=registration.query.all()
-        
-        for i in lo:
-            if email==i.email:
-                if i.status=="Blocked":
-                    flash(i.email+" is blocked by our admin","warning")
-                    return redirect("/admin/")
-
-                if i.role=="User":
-                    flash("You are not authorized to access this page!!","warning")
-                    return redirect("/admin/")
-
-                if p.hexdigest()!=i.password:
-                    flash("Invalid Email or Password!!","warning")
-                    return redirect("/admin/")
-                # em=i.email
-                # pa=i.password
-                session['email']=email
-                session['logo']=(i.fname[0:1]+i.lname[0:1]).upper()
-                session['role']=i.role
-                break
-            # if em=="" and pa="":
-        if 'email' in session:
+        if username=='Admin' and password=='Admin':
+            session['un']='Admin'
             return redirect("/admin/home")
         else:
             return redirect("/admin/")
 
-    return render_template("admin/adminlogin.html")
+    return render_template("admin/login.html")
 
-@app.route("/admin/signup",methods=["GET","POST"])
-def adminsignup():
-
-    if 'email' in session:
-        flash("You are already login","success")
-        return render_template('home.html',se=session['logo'])
-
-
-    if request.method=="POST":
-        fname=request.form['fname']
-        lname=request.form['lname']
-        gender=request.form['gender']
-        phone=request.form['phone']
-        email=request.form['email']
-        password=request.form['password']
-        
-        if fname=="" or lname=="" or len(phone)!=10 or email=="" or password=="":
-            flash("Please fill all the feilds and phone number should be of 10 digits","warning")
-            return redirect("/admin/signup")
-        else:
-            p = hashlib.md5(password.encode())
-            log=registration(fname=fname,lname=lname,gender=gender,phone=phone,email=email,password=p.hexdigest(),role="Admin",status="None")
-            db.session.add(log)
-            db.session.commit()
-            flash("Successfully Sign Up","success")
-            return redirect("/admin/")
-        
-    return render_template("admin/adminregister.html")
 
 @app.route("/admin/home")
 def adminhome():
-    if 'email' in session and session['role']=="Admin":
-        return render_template("/admin/home.html",se=session['logo'])
+    if 'un' in session:
+        return render_template("/admin/home.html")
     else:
         return redirect("/admin/")
 
 @app.route("/admin/users")
 def users():
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         allfeed=registration.query.filter_by(role='User').all()
-        return render_template("admin/user.html",allfeed=allfeed,se=session['logo'])
+        return render_template("admin/Users.html",allfeed=allfeed)
     else:
         return redirect("/admin/")
 
 @app.route("/admin/status/<string:email>")
 def status(email):
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         s=registration.query.filter_by(email=email).first()
         if s.status=="Unblocked":
             s.status="Blocked"
@@ -189,45 +139,45 @@ def status(email):
 
 @app.route("/admin/profile/<string:email>")
 def pro(email):
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         r=registration.query.filter_by(email=email).first()
         f=feedback.query.filter_by(Email=email).all()
         c=ContactUs.query.filter_by(email=email).all()
         w=weather.query.filter_by(Email=email).all()
-        return render_template("admin/profile.html",r=r,f=f,c=c,w=w,se=session['logo'])
+        return render_template("admin/UserProfile.html",r=r,f=f,c=c,w=w)
 
 @app.route("/admin/Feedbacks")
 def feed():
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         f=feedback.query.all()
-        return render_template("/admin/feedback.html",f=f,se=session['logo'])
+        return render_template("/admin/feedbacks.html",f=f)
     else:
         return redirect("/admin")
 
-@app.route("/admin/ContactUs")
+@app.route("/admin/Queries")
 def quer():
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         c=ContactUs.query.all()
-        return render_template("admin/queries.html",c=c,se=session['logo'])
+        return render_template("admin/queries.html",c=c)
     else:
         return redirect("/admin")
 
 @app.route("/admin/delete/<string:email>/<int:sno>")
 def delete(email,sno):
     # if em !="" and pa !="":   
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         f=feedback.query.filter_by(Email=email,sno=sno).first()
         db.session.delete(f)
         db.session.commit()
         flash(email+" feedback is successfully deleted","success")
         return redirect('/admin/users')
     else:
-        return redirect("/")
+        return redirect("/admin")
 
 @app.route("/admin/response/<string:email>/<int:sno>",methods=['GET','POST'])
 def resp(email,sno):
     # if em !="" and pa !="":   
-    if 'email' in session and session['role']=="Admin":
+    if 'un' in session:
         if request.method=='POST':
             r=request.form['response']
             c=ContactUs.query.filter_by(email=email,sno=sno).first()
@@ -237,14 +187,14 @@ def resp(email,sno):
             flash(email+" response send is successfully","success")
         return redirect('/admin/users')
     else:
-        return redirect("/")
+        return redirect("/admin")
 
 
 @app.route("/admin/profile")
 def adprofile():
     if 'email' in session and session['role']=="Admin":
         lo=registration.query.filter_by(email=session['email']).first()
-        return render_template("/admin/myprofile.html",lo=lo,se=session['logo'])
+        return render_template("/admin/myprofile.html",lo=lo)
     else:
         return redirect("/admin/")
 
@@ -281,7 +231,6 @@ def adprofileupdate():
             re.lname=lname
             re.gender=gender
             re.phone=phone
-            session['logo']=(fname[0:1]+lname[0:1]).upper()
 
             db.session.add(re)
             db.session.commit()
@@ -297,7 +246,7 @@ def login():
     # global em,pa
     if 'email' in session:
         flash("You are already login","success")
-        return render_template('home.html',se=session['logo'])
+        return render_template('home.html')
 
     if request.method=="POST":
         email=request.form['email']
@@ -322,7 +271,6 @@ def login():
             return redirect("/")
         else:
             session['email']=lo.email
-            session['logo']=(lo.fname[0:1]+lo.lname[0:1]).upper()
             session['role']=lo.role
             return redirect("/home")
             
@@ -333,7 +281,7 @@ def signup():
 
     if 'email' in session:
         flash("You are already login","success")
-        return render_template('home.html',se=session['logo'])
+        return render_template('home.html')
 
 
     if request.method=="POST":
@@ -368,17 +316,18 @@ def signup():
 
 @app.route("/logout")
 def logout():
-    session.pop('email')
-    session.pop('logo')
-    session.pop('role')
-
-    return redirect("/")
+    if 'email' in session:
+      session.pop('email')
+      return redirect("/")
+    elif 'un' in session:
+        session.pop('un')
+        return redirect("/admin")
 
 @app.route("/profile")
 def profile():
     if 'email' in session:
         lo=registration.query.filter_by(email=session['email']).first()
-        return render_template("profile.html",lo=lo,se=session['logo'])
+        return render_template("profile.html",lo=lo)
     else:
         return redirect("/")
 
@@ -415,7 +364,6 @@ def profileupdate():
             re.lname=lname
             re.gender=gender
             re.phone=phone
-            session['logo']=(fname[0:1]+lname[0:1]).upper()
 
             db.session.add(re)
             db.session.commit()
@@ -430,7 +378,7 @@ def profileupdate():
 def home():
     # if em !="" and pa !="":
     if 'email' in session:
-        return render_template("home.html",se=session['logo'])
+        return render_template("home.html")
     else:
         return redirect("/")
 
@@ -474,9 +422,9 @@ def currentwea():
                     im="General.jpeg"
                     co="white"
 
-            return render_template("currentwea.html",l=l,se=session['logo'],im=im,co=co)
+            return render_template("currentwea.html",l=l,im=im,co=co)
 
-        return render_template("currentwea.html",l={'0':0},se=session['logo'],c='black')
+        return render_template("currentwea.html",l={'0':0},c='black')
     else:
         return redirect("/")
 
@@ -508,7 +456,7 @@ def history():
             prev = "/history?page="+ str(page-1)
             next = "/history?page="+ str(page+1)
         
-        return render_template('history.html',se=session['logo'],allfeed=c, prev=prev, next=next)
+        return render_template('history.html',allfeed=c, prev=prev, next=next)
     else:
         return redirect("/")
     
@@ -548,15 +496,15 @@ def forecast():
                     d.append(t)
                     
                 
-            return render_template("forecast.html",se=session['logo'],l=data,d=d)
-        return render_template("forecast.html",l={'0':0},se=session['logo'],c='black')
+            return render_template("forecast.html",l=data,d=d)
+        return render_template("forecast.html",l={'0':0},c='black')
     else:
         return redirect("/")
 
 @app.route("/crop",methods=['GET','POST'])
 def crop():
     if 'email' in session:
-        return render_template("crop.html",l={'cod':0},se=session['logo'],c='black')
+        return render_template("crop.html",l={'cod':0},c='black')
     else:
         return redirect("/")
 
@@ -578,16 +526,16 @@ def cropprediction():
             
             if 0>float(n) or float(n)>150:
                 flash("Value of Nitrogen must be in between 0 to 150 !!","warning")
-                return render_template("crop.html",se=session['logo'],l=a)
+                return render_template("crop.html",l=a)
             elif 5>float(p) or float(p)>250:
                 flash("Value of Phosphorus must be in between 5 to 250 !!","warning")
-                return render_template("crop.html",se=session['logo'],l=a)
+                return render_template("crop.html",l=a)
             elif 5>float(k) or float(k)>220:
                 flash("Value of Potassium must be in between 5 to 220 !!","warning")
-                return render_template("crop.html",se=session['logo'],l=a)
+                return render_template("crop.html",l=a)
             elif 0>float(ph) or float(ph)>14:
                 flash("Value of PH must be in between 0 to 14 !!","warning")
-                return render_template("crop.html",se=session['logo'],l=a)
+                return render_template("crop.html",l=a)
 
             #url = "https://api.openweathermap.org/data/2.5/forecast?q="+c+"&exclude=minutely,hourly&appid=850789bc308ec795c19f9f4df7ed367d"
             url="https://api.weatherbit.io/v2.0/forecast/hourly?city="+c+"&key=a6a52896bb4b4e5db0316789bb323bd2&hours=240"    
@@ -683,9 +631,9 @@ def cropprediction():
             py=json.dumps(py)
             yy=json.dumps(yy)
 
-            return render_template("cropprediction.html",se=session['logo'],cro=cro,py=py,yy=yy,ye=ye)
+            return render_template("cropprediction.html",cro=cro,py=py,yy=yy,ye=ye)
 
-        return render_template("crop.html",l={'0':0},se=session['logo'])
+        return render_template("crop.html",l={'0':0})
     else:
         return redirect("/")
 
@@ -703,7 +651,7 @@ def about():
             flash("Your feedback is successfully send ","success")
             return redirect("/AboutUs")
 
-        return render_template("about.html",se=session['logo'])
+        return render_template("about.html")
     else:
         return redirect("/")
 
@@ -733,7 +681,7 @@ def feedb():
         prev = "/feedback?page="+ str(page-1)
         next = "/feedback?page="+ str(page+1)
     
-    return render_template('feedback.html',se=session['logo'],feed=feed, prev=prev, next=next)
+    return render_template('feedback.html',feed=feed, prev=prev, next=next)
 
 
 @app.route("/queries")
@@ -763,7 +711,7 @@ def queries():
         prev = "/queries?page="+ str(page-1)
         next = "/queries?page="+ str(page+1)
     
-    return render_template('queries.html',se=session['logo'],queries=c, prev=prev, next=next)
+    return render_template('queries.html',queries=c, prev=prev, next=next)
 
 @app.route("/ContactUs",methods=["GET","POST"])
 def contact():
@@ -784,7 +732,7 @@ def contact():
             return redirect("/ContactUs")
         
         lo=registration.query.filter_by(email=session['email']).first()
-        return render_template("contact.html",lo=lo,se=session['logo'])
+        return render_template("contact.html",lo=lo)
  
     else:
         return redirect("/")
